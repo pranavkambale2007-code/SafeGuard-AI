@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeGuard-AI — AI-Powered Construction Safety Monitoring</title>
+  <meta name="description" content="SafeGuard-AI delivers autonomous computer-vision intelligence for construction and heavy industrial operations. Every worker deserves to go home safe.">
+  
+  <!-- Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/landing-3d.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       SafeGuard AI Initial Loading Veil (Preserved from 3D Simulation)
+       ========================================================================= -->
+  <div id="veil" class="ov">
+    <div>
+      <h1>SafeGuard <span>AI</span></h1>
+      <p>Initializing site digital twin</p>
+      <div id="vb"><i></i></div>
+    </div>
+  </div>
+
+  <!-- WebGL Error Notification Fallback -->
+  <div id="err" class="ov">
+    <div>
+      <h2>3D Simulation Unavailable</h2>
+      <p>This digital twin requires WebGL and an internet connection to stream Three.js.</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       Sticky Navigation Bar with Scroll Transition
+       ========================================================================= -->
+  <header class="landing-nav-modern" id="main-nav">
+    <a href="index.html" class="brand-badge">
+      <div class="brand-shield-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(183,227,106,0.15)"/>
+          <path d="M9 12l2 2 4-4" stroke="#B7E36A" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span>SafeGuard-<span style="color:var(--lime-accent);">AI</span></span>
+    </a>
+
+    <nav>
+      <ul class="nav-links-modern">
+        <li><a href="#platform">Platform</a></li>
+        <li><a href="#capabilities">Capabilities</a></li>
+        <li><a href="#showcase">Showcase</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="dashboard.html" class="btn-launch-nav">
+        <span>Launch Dashboard</span>
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </a>
+      <button class="mobile-nav-toggle" id="mobile-toggle" aria-label="Toggle Navigation Menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       Hero Section — Housing the Three.js Construction Site Animation
+       ========================================================================= -->
+  <section class="hero-3d-section" id="hero-section">
+    <!-- Viewport Container for 3D Canvas -->
+    <div id="hero-viewport">
+      <canvas id="hero-3d-canvas"></canvas>
+
+      <!-- Post-Processing Depth-of-Field Blur -->
+      <div id="dof" class="ov"></div>
+
+      <!-- Real-Time AI Computer Vision HUD Overlays -->
+      <div id="hud" class="ov"></div>
+
+      <!-- Laser Scanning Sweep Animation -->
+      <div id="scan" class="ov"></div>
+
+
+      <!-- Chapter Titles & Subtitles -->
+      <div id="cap" class="ov">
+        <div id="no"></div>
+        <h2 id="ttl"></h2>
+        <p id="sub"></p>
+      </div>
+
+      <!-- Incident Simulation Alert Banner -->
+      <div id="alert" class="ov">
+        &#9888; INCIDENT &middot; WRK-002 &middot; HARNESS DETACHED &middot; FALL HAZARD
+        <small id="alert2">Supervisor notified &middot; Zone locked</small>
+      </div>
+
+      <!-- Gradient Scrim for Content Readability -->
+      <div class="hero-overlay-scrim"></div>
+    </div>
+
+    <!-- Hero Content Overlay (Positioned to the left, keeping construction visible) -->
+    <div class="hero-layout-container">
+      <div class="hero-content-left">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-beacon"></span> AI-POWERED CONSTRUCTION SAFETY
+        </div>
+        <h1 class="hero-headline">
+          Every Worker Deserves to <span class="text-lime">Go Home Safe.</span>
+        </h1>
+        <p class="hero-subtext">
+          Monitor protective equipment, track workers, and identify construction-site hazards through intelligent safety monitoring.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#platform" class="btn-primary-hero">
+            <span>Explore the Platform</span>
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </a>
+          <a href="dashboard.html" class="btn-secondary-hero">
+            <span>Launch Dashboard</span>
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="hero-feature-tags">
+          <span>PPE COMPLIANCE</span>
+          <span class="dot">&middot;</span>
+          <span>WORKER MONITORING</span>
+          <span class="dot">&middot;</span>
+          <span>HAZARD AWARENESS</span>
+        </div>
+
+        <!-- Compact Monitoring Telemetry Panel -->
+        <div class="hero-monitoring-panel" id="hero-monitoring-panel">
+          <div class="telemetry-grid">
+            <div class="telemetry-item">
+              <span class="telemetry-label">Monitoring Status</span>
+              <span class="telemetry-value status-live">● Active Telemetry &middot; Edge Pipeline v3.4</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">Workers Monitored</span>
+              <span class="telemetry-value">11 Grounded & Elevated Trades</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">PPE Compliance</span>
+              <span class="telemetry-value status-live">98.4% Job-Site Average</span>
+            </div>
+            <div class="telemetry-item">
+              <span class="telemetry-label">Active Events</span>
+              <span class="telemetry-value status-warn">1 Proximity Advisory &middot; 0 Critical Breaches</span>
+            </div>
+          </div>
+          <div class="telemetry-disclaimer">
+            * Demonstrative field telemetry synchronized with SafeGuard-AI monitoring protocol.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section A — Platform Introduction (Ivory Background)
+       ========================================================================= -->
+  <section class="section-platform" id="platform">
+    <div class="section-container">
+      <div class="platform-grid">
+        <div class="platform-editorial">
+          <span class="section-eyebrow">THE SAFEGUARD PLATFORM</span>
+          <h2 class="section-heading">Safety intelligence for the real world.</h2>
+          <p class="section-lead">
+            Bring worker visibility, protective-equipment checks, and site hazard awareness into one focused monitoring experience.
+          </p>
+
+          <div class="platform-pillar">
+            <h4>Continuous Field Telemetry</h4>
+            <p>High-frequency edge inference across active site cameras without cloud round-trip delay.</p>
+          </div>
+
+          <div class="platform-pillar">
+            <h4>Multi-Worker Spatial Tracking</h4>
+            <p>Persistent personnel tracking across complex elevated scaffolding, ground excavations, and haulage paths.</p>
+          </div>
+
+          <div class="platform-pillar">
+            <h4>Sub-Second Incident Verification</h4>
+            <p>Automated compliance audit ledgers generated instantly with timestamped evidence for safety officers.</p>
+          </div>
+        </div>
+
+        <div class="platform-stats-grid">
+          <div class="stat-card-ivory">
+            <div class="stat-number">&lt; 50ms</div>
+            <div class="stat-label">Neural Inference Latency</div>
+            <div class="stat-sub">Real-time edge processing on local site cameras</div>
+          </div>
+          <div class="stat-card-ivory">
+            <div class="stat-number">99.2%</div>
+            <div class="stat-label">PPE Verification Accuracy</div>
+            <div class="stat-sub">Precision detection for hardhats and high-vis vests</div>
+          </div>
+          <div class="stat-card-ivory">
+            <div class="stat-number">Zero</div>
+            <div class="stat-label">False Alarm Toleration</div>
+            <div class="stat-sub">Temporal consistency prevents spurious alert fatigue</div>
+          </div>
+          <div class="stat-card-ivory">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">OSHA 1926 Aligned</div>
+            <div class="stat-sub">Built to rigorous industrial safety compliance codes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section B — Core Capabilities (Near-Black Background)
+       ========================================================================= -->
+  <section class="section-capabilities" id="capabilities">
+    <div class="section-container">
+      <span class="section-eyebrow">COMPREHENSIVE JOB-SITE DEFENSE</span>
+      <h2 class="section-heading">See risk earlier. Respond with confidence.</h2>
+      <p class="section-lead">
+        Four focused capabilities designed specifically for the chaotic reality of active construction environments.
+      </p>
+
+      <div class="capabilities-grid">
+        <!-- Capability 1 -->
+        <div class="capability-card">
+          <div class="capability-icon-wrap">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a5 5 0 00-5 5v2H5a2 2 0 00-2 2v2a2 2 0 002 2h14a2 2 0 002-2v-2a2 2 0 00-2-2h-2V7a5 5 0 00-5-5z"/>
+            </svg>
+          </div>
+          <h3>PPE Compliance</h3>
+          <p>
+            Identify helmet and reflective-vest compliance using the supported detection system. Continuously verifies ANSI Type I/II hardhats and Class 2/3 high-visibility garments across trades.
+          </p>
+          <div class="capability-meta">
+            <span>● Operational</span> &middot; <span>Optical Detection</span>
+          </div>
+        </div>
+
+        <!-- Capability 2 -->
+        <div class="capability-card">
+          <div class="capability-icon-wrap">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+              <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <h3>Worker Monitoring</h3>
+          <p>
+            Review worker identity and monitoring status where supported. Maintains accurate personnel count, zone occupancy, and shift verification across active sectors.
+          </p>
+          <div class="capability-meta">
+            <span>● Operational</span> &middot; <span>Telemetry Engine</span>
+          </div>
+        </div>
+
+        <!-- Capability 3 -->
+        <div class="capability-card">
+          <div class="capability-icon-wrap">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3>Hazard Awareness</h3>
+          <p>
+            Highlight restricted-zone entry and machinery-proximity risks where implemented. Dynamic virtual exclusion zones adapt to heavy machinery movement and crane load swing.
+          </p>
+          <div class="capability-meta">
+            <span>● Operational</span> &middot; <span>Geofencing Core</span>
+          </div>
+        </div>
+
+        <!-- Capability 4 -->
+        <div class="capability-card">
+          <div class="capability-icon-wrap">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </div>
+          <h3>Safety Intelligence</h3>
+          <p>
+            Review monitoring events, alerts, and risk indicators based on available data. Aggregates inspection logs, severity scoring, and near-miss frequency to prevent incidents.
+          </p>
+          <div class="capability-meta">
+            <span>● Operational</span> &middot; <span>Analytics Hub</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section C — Large Visual Showcase (Deep Forest Green)
+       ========================================================================= -->
+  <section class="section-showcase" id="showcase">
+    <div class="section-container">
+      <span class="section-eyebrow">END-TO-END SAFETY PIPELINE</span>
+      <h2 class="section-heading">From site activity to actionable insight.</h2>
+      <p class="section-lead">
+        A seamless loop connecting optical job-site cameras directly to safety officer dispatch.
+      </p>
+
+      <div class="showcase-workflow-grid">
+        <div class="workflow-steps-list">
+          <div class="workflow-step-card">
+            <div class="workflow-step-num">PHASE 01</div>
+            <h4>Observe site activity</h4>
+            <p>
+              Site cameras, PTZ units, and equipment feeds capture continuous video streams across active scaffolding, excavations, and crane operations.
+            </p>
+          </div>
+
+          <div class="workflow-step-card">
+            <div class="workflow-step-num">PHASE 02</div>
+            <h4>Identify potential safety events</h4>
+            <p>
+              Edge neural networks immediately detect missing hardhats, detached harnesses, unlatched lanyards, or personnel entering crane drop-zones.
+            </p>
+          </div>
+
+          <div class="workflow-step-card">
+            <div class="workflow-step-num">PHASE 03</div>
+            <h4>Review alerts and take action</h4>
+            <p>
+              Supervisors receive instant visual notifications with worker coordinates, triggering immediate mitigation before near-misses become injuries.
+            </p>
+          </div>
+        </div>
+
+        <div class="showcase-telemetry-preview">
+          <div class="preview-topbar">
+            <div class="preview-topbar-title">
+              <span class="eyebrow-beacon"></span> Live Monitoring Feed &middot; Sector 02
+            </div>
+            <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--muted-grey);">30 FPS &middot; SYNCED</span>
+          </div>
+
+          <div class="preview-body">
+            <div class="preview-detection-row">
+              <div class="preview-det-info">
+                <span class="preview-det-id">WRK-001 &middot; Safety Specialist</span>
+                <span class="preview-det-role">Walkway Corridor &middot; Hardhat + Hi-Vis Verified</span>
+              </div>
+              <span class="preview-det-badge">COMPLIANT 99%</span>
+            </div>
+
+            <div class="preview-detection-row warn">
+              <div class="preview-det-info">
+                <span class="preview-det-id">WRK-002 &middot; Scaffold Inspector</span>
+                <span class="preview-det-role">Level 2 Scaffold ($8.12m) &middot; Harness Monitored</span>
+              </div>
+              <span class="preview-det-badge warn">HARNESS ACTIVE</span>
+            </div>
+
+            <div class="preview-detection-row">
+              <div class="preview-det-info">
+                <span class="preview-det-id">EXC-01 &middot; Hydraulic Excavator</span>
+                <span class="preview-det-role">Trench Exclusion Boundary &middot; Perimeter Clear</span>
+              </div>
+              <span class="preview-det-badge">ZONE CLEAR</span>
+            </div>
+
+            <div class="preview-detection-row">
+              <div class="preview-det-info">
+                <span class="preview-det-id">CRN-01 &middot; 28m Tower Crane</span>
+                <span class="preview-det-role">Ground Drop-Zone Geofence &middot; 4.2T Load</span>
+              </div>
+              <span class="preview-det-badge">GEOFENCE LOCKED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section D — How It Works (Ivory Background, 3 Clean Steps)
+       ========================================================================= -->
+  <section class="section-how-it-works" id="how-it-works">
+    <div class="section-container">
+      <span class="section-eyebrow">DEPLOYMENT & ARCHITECTURE</span>
+      <h2 class="section-heading">How SafeGuard-AI Operates</h2>
+      <p class="section-lead">
+        A three-step architecture engineered to integrate with existing site cameras without complex rewiring.
+      </p>
+
+      <div class="how-steps-grid">
+        <div class="how-step-card">
+          <div class="how-step-badge">01</div>
+          <h3>Observe</h3>
+          <p>
+            Capture or ingest supported camera and sensor data from fixed site masts, crane-mounted units, and perimeter surveillance feeds.
+          </p>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-badge">02</div>
+          <h3>Analyze</h3>
+          <p>
+            Apply the available computer-vision models and monitoring logic to detect PPE anomalies, harness disconnections, and exclusion zone breaches.
+          </p>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-badge">03</div>
+          <h3>Respond</h3>
+          <p>
+            Review safety events and alerts through the monitoring dashboard, generating instantaneous supervisor dispatch and OSHA-compliant event ledgers.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section E — Dashboard Call to Action (Dark Section)
+       ========================================================================= -->
+  <section class="section-dashboard-cta" id="dashboard-cta">
+    <div class="cta-content-wrap">
+      <span class="section-eyebrow" style="color:var(--lime-accent);">READY TO PROTECT YOUR WORKFORCE?</span>
+      <h2 class="section-heading">Make safety visible. Make every decision count.</h2>
+      <p>
+        Explore SafeGuard-AI's construction-site monitoring experience.
+      </p>
+      <div class="cta-btn-group">
+        <a href="dashboard.html" class="btn-cta-primary">
+          <span>Launch Dashboard</span>
+          <svg viewBox="0 0 20 20" width="18" height="18" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </a>
+        <a href="monitoring.html" class="btn-cta-secondary">
+          <span>View Live Camera Feed</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       Section F — Footer (Dark Theme with Navigation & Legal)
+       ========================================================================= -->
+  <footer class="landing-footer" id="about">
+    <div class="footer-container">
+      <div class="footer-top-grid">
+        <div class="footer-col-brand">
+          <a href="index.html" class="brand-badge">
+            <div class="brand-shield-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(183,227,106,0.15)"/>
+                <path d="M9 12l2 2 4-4" stroke="#B7E36A" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span>SafeGuard-<span style="color:var(--lime-accent);">AI</span></span>
+          </a>
+          <p>
+            Enterprise computer-vision intelligence for construction and heavy industrial operations. Engineered for zero preventable accidents.
+          </p>
+          <div class="footer-standards-pills">
+            <span class="standard-pill">OSHA 1926</span>
+            <span class="standard-pill">ANSI Z89.1</span>
+            <span class="standard-pill">ISO 45001</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Platform</h5>
+          <ul>
+            <li><a href="#platform">Platform Overview</a></li>
+            <li><a href="#capabilities">Core Capabilities</a></li>
+            <li><a href="#showcase">Workflow Pipeline</a></li>
+            <li><a href="#how-it-works">Architecture</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Applications</h5>
+          <ul>
+            <li><a href="dashboard.html">Control Center</a></li>
+            <li><a href="monitoring.html">Live Camera Detection</a></li>
+            <li><a href="incidents.html">Incident Ledger</a></li>
+            <li><a href="analytics.html">Safety Analytics</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Company & Compliance</h5>
+          <ul>
+            <li><a href="#about">About SafeGuard-AI</a></li>
+            <li><a href="reports.html">Audit Reports</a></li>
+            <li><a href="settings.html">System Settings</a></li>
+            <li><a href="#dashboard-cta">Contact EHS Support</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 SafeGuard-AI Technologies Inc. All rights reserved.</div>
+        <div class="footer-bottom-links">
+          <a href="#" onclick="alert('SafeGuard-AI Privacy Notice: Field telemetry and worker telemetry streams are processed securely in accordance with enterprise data protection standards.'); return false;">Privacy Policy</a>
+          <a href="#" onclick="alert('SafeGuard-AI Terms: Autonomous safety monitoring is designed as a supervisory decision-support tool aligned with OSHA 1926.'); return false;">Terms of Service</a>
+          <a href="#" onclick="alert('SafeGuard-AI Cookie Notice: Only essential local session data is stored to maintain telemetry preferences.'); return false;">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       Scripts: Three.js + GSAP + ScrollTrigger + App Core + 3D Simulation
+       ========================================================================= -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/landing-3d.js"></script>
+
+  <!-- Navigation Scroll Transition & Fullscreen Logic -->
+  <script>
+    (function () {
+      // Navbar scroll blur effect
+      const nav = document.getElementById("main-nav");
+      window.addEventListener("scroll", function () {
+        if (window.scrollY > 40) {
+          nav.classList.add("scrolled");
+        } else {
+          nav.classList.remove("scrolled");
+        }
+      }, { passive: true });
+
+
+
+      // GSAP Scroll reveals for editorial sections
+      if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.utils.toArray(".platform-pillar, .stat-card-ivory, .capability-card, .workflow-step-card, .how-step-card").forEach(function (elem) {
+          gsap.from(elem, {
+            scrollTrigger: {
+              trigger: elem,
+              start: "top 88%",
+              toggleActions: "play none none none"
+            },
+            opacity: 0,
+            y: 24,
+            duration: 0.65,
+            ease: "power2.out"
+          });
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

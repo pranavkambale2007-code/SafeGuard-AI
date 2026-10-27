@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeGuard AI — Cinematic Site Fly-Through</title>
+<style>
+:root{--o:#FF8C32;--y:#FFD166;--g:#22c55e;--r:#ef4444}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05080d;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.ov{position:fixed;pointer-events:none}
+#hud{inset:0;overflow:hidden;opacity:0;transition:opacity 1s}
+.ready #hud{opacity:1}
+.tag{position:absolute;left:0;top:0;will-change:transform}
+.tag .bx{position:absolute;border:2px solid var(--g);border-radius:3px;box-shadow:0 0 12px rgba(34,197,94,.5);transform:translate(-50%,-50%)}
+.tag .lb{position:absolute;transform:translate(-50%,0);white-space:nowrap;background:rgba(8,14,22,.82);border:1px solid var(--g);color:#fff;font:700 10px/1.3 ui-monospace,Consolas,monospace;padding:3px 7px;border-radius:3px;letter-spacing:.05em}
+.tag .lb b{color:var(--g)}
+.tag.bad .bx{border-color:var(--r);box-shadow:0 0 16px rgba(239,68,68,.8);animation:bl .6s infinite alternate}
+.tag.bad .lb{border-color:var(--r)}.tag.bad .lb b{color:var(--r)}
+@keyframes bl{to{opacity:.35}}
+#fs,#dock,.bar,#bt,#bb,#ticks,#skip,#prog,.tk{display:none!important;height:0!important;opacity:0!important;pointer-events:none!important;visibility:hidden!important}
+#cap{left:clamp(20px,6vw,96px);bottom:clamp(24px,6vh,64px);max-width:min(640px,86vw);opacity:0;text-shadow:0 2px 24px rgba(5,12,24,.8);z-index:15}
+#cap.in{animation:ci 1s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes ci{from{opacity:0;transform:translateY(18px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.done #cap{opacity:0!important;animation:none}
+#no{font:700 .78rem ui-monospace,Consolas,monospace;letter-spacing:.22em;color:var(--o);margin-bottom:10px}
+#ttl{margin:0 0 10px;font-size:clamp(1.7rem,4.6vw,3.6rem);line-height:1.02;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+#sub{margin:0;font-size:clamp(.9rem,1.4vw,1.1rem);font-weight:500;color:rgba(255,255,255,.92)}
+#scan{top:0;left:-30%;width:30%;height:100%;opacity:0;z-index:12;background:linear-gradient(90deg,transparent,rgba(255,140,50,.3) 85%,rgba(255,209,102,.85));border-right:2px solid var(--y);box-shadow:8px 0 40px rgba(255,140,50,.5)}
+#scan.go{animation:sc 2.6s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes sc{0%{left:-30%;opacity:0}12%,88%{opacity:1}100%{left:100%;opacity:0}}
+#veil{inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0e1824,#05080d 70%);transition:opacity 1s}
+#veil.lift{opacity:0}
+#veil div{text-align:center}
+#veil h1{margin:0;font-size:clamp(1.8rem,4vw,3rem);letter-spacing:.04em;animation:pl 2.2s infinite}
+#veil h1 span,.o{color:var(--o)}
+@keyframes pl{50%{opacity:.7}}
+#veil p{margin:8px 0 20px;font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+#vb{width:min(260px,60vw);height:3px;margin:0 auto;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+#vb i{display:block;width:4%;height:100%;background:linear-gradient(90deg,var(--o),var(--y));transition:width 1s}
+#hero{left:clamp(20px,5vw,72px);top:clamp(84px,14vh,130px);max-width:min(560px,88vw);opacity:0;transform:translateY(20px);transition:opacity 1.2s .3s,transform 1.2s .3s;z-index:10;text-shadow:0 2px 20px rgba(5,12,24,.7)}
+.ready #hero{opacity:1;transform:none}
+#hero .bd{display:inline-block;padding:6px 14px;border-radius:100px;background:rgba(255,140,50,.14);border:1px solid rgba(255,140,50,.4);color:var(--o);font:700 .74rem system-ui;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+#hero h2{margin:0 0 12px;font-size:clamp(1.8rem,4.2vw,3.4rem);line-height:1.05;font-weight:800}
+#hero p{margin:0;font-size:clamp(.9rem,1.3vw,1.05rem);color:rgba(255,255,255,.9);line-height:1.5}
+#hero .cta-group{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;pointer-events:auto}
+#hero .btn-hero-primary{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FF8C32,#FF5A00);color:#fff;font:700 .82rem system-ui;text-transform:uppercase;letter-spacing:.06em;padding:10px 20px;border-radius:8px;text-decoration:none;box-shadow:0 4px 18px rgba(255,140,50,.4);transition:transform .2s,box-shadow .2s}
+#hero .btn-hero-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,140,50,.6)}
+#hero .btn-hero-secondary{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.24);color:#fff;font:700 .82rem system-ui;text-transform:uppercase;letter-spacing:.06em;padding:10px 18px;border-radius:8px;text-decoration:none;backdrop-filter:blur(8px);transition:background .2s,border-color .2s}
+#hero .btn-hero-secondary:hover{background:rgba(255,255,255,.16);border-color:#fff}
+#alert{top:78px;left:50%;transform:translate(-50%,-20px);background:rgba(127,29,29,.92);border:1px solid var(--r);padding:9px 18px;border-radius:8px;font:700 .8rem ui-monospace,Consolas,monospace;letter-spacing:.05em;opacity:0;transition:.4s;z-index:31}
+#alert small{display:block;margin-top:3px;font-size:.66rem;font-weight:600;letter-spacing:.08em;color:#fecaca}
+#alert.show{opacity:1;transform:translate(-50%,0)}
+#err{inset:0;z-index:99;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;background:#05080d}
+@media(max-width:760px){.tk em{display:none}}
+@media(prefers-reduced-motion:reduce){#scan{display:none}}
+#dof{display:none!important;position:fixed;inset:0;pointer-events:none;z-index:8;-webkit-backdrop-filter:blur(2.2px);backdrop-filter:blur(2.2px);-webkit-mask-image:radial-gradient(ellipse at 50% 50%,transparent 58%,#000 100%);mask-image:radial-gradient(ellipse at 50% 50%,transparent 58%,#000 100%)}
+#cap{bottom:clamp(28px,8vh,80px)!important}
+#fs{position:fixed;top:14px;right:16px;z-index:40;cursor:pointer;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:#fff;font:700 .74rem system-ui;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:100px;backdrop-filter:blur(8px);transition:background .2s}
+#fs:hover{background:var(--o);border-color:transparent}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud" class="ov"></div>
+<div id="scan" class="ov"></div>
+<div id="cap" class="ov"><div id="no"></div><h2 id="ttl"></h2><p id="sub"></p></div>
+<div id="hero" class="ov">
+  <div class="bd">&#9679; Real-Time Construction Safety Intelligence</div>
+  <h2>Building the Future.<br><span class="o">Protecting Every Worker.</span></h2>
+  <p>AI-powered PPE compliance, worker tracking and hazard awareness across your whole construction site.</p>
+  <div class="cta-group">
+    <a href="dashboard.html" class="btn-hero-primary">Launch Dashboard &rarr;</a>
+    <a href="monitoring.html" class="btn-hero-secondary">Live Camera Feed</a>
+  </div>
+</div>
+<div id="alert" class="ov">&#9888; INCIDENT &middot; WRK-002 &middot; HARNESS DETACHED &middot; FALL HAZARD<small id="alert2">Supervisor notified &middot; Zone locked</small></div>
+<div id="veil" class="ov"><div><h1>SafeGuard <span>AI</span></h1><p>Initializing site digital twin</p><div id="vb"><i></i></div></div></div>
+<div id="err" class="ov"><div><h2>3D view unavailable</h2><p>This file needs WebGL and an internet connection (it loads Three.js from a CDN).</p></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/landing-3d.js"></script>
+
+</body>
+</html>

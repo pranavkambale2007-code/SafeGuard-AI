@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeGuard AI — Workforce Safety & Compliance Directory</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="brand-logo" style="font-size:1.15rem;">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(34, 211, 238, 0.2)" stroke="var(--cyan)"/>
+            <path d="M9 12l2 2 4-4" stroke="var(--cyan)" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>SafeGuard <span class="text-cyan">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="monitoring.html" class="nav-item">
+          <span class="icon">📹</span>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="workers.html" class="nav-item active">
+          <span class="icon">👷</span>
+          <span>Workers</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="icon">🔔</span>
+          <span>Alerts</span>
+        </a>
+        <a href="incidents.html" class="nav-item">
+          <span class="icon">🚨</span>
+          <span>Incidents</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <span class="icon">📈</span>
+          <span>Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">PERSONNEL ROSTER</div>
+        <div id="sidebar-worker-count" style="font-weight:700; color:var(--text-secondary); margin-bottom:8px;">Registered Personnel</div>
+        <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" style="width:100%; justify-content:center; font-size:0.75rem; padding:5px 8px;" title="Reset all website data to factory baseline">
+          🔄 Reset All Website
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Topbar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-hamburger" onclick="SafeGuardApp.toggleMobileSidebar()" aria-label="Toggle navigation">☰</button>
+          <div class="facility-badge">
+            <span style="font-size:1.1rem;">🏭</span>
+            <span>Pune Manufacturing Plant</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="sys-status-badge">
+            <span class="dot dot-safe"></span>
+            <span>All Systems Operational</span>
+          </div>
+
+          <!-- Reset All Website -->
+          <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+            🔄 Reset
+          </button>
+
+          <button class="btn btn-outline btn-icon" id="theme-toggle-btn" onclick="SafeGuardApp.toggleTheme()">
+            🌙
+          </button>
+
+          <div class="notification-btn-wrapper" id="notif-wrapper">
+            <button class="btn btn-outline btn-icon" onclick="SafeGuardApp.toggleNotificationDropdown()">
+              🔔
+              <span class="notif-count-badge" id="topbar-notif-count" style="display:none;">0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <span>Active Safety Alerts</span>
+                <a href="alerts.html" style="font-size:0.8rem; color:var(--cyan);">View All</a>
+              </div>
+              <div class="notif-list" id="notif-list-items"></div>
+            </div>
+          </div>
+
+          <div class="user-profile-badge">
+            <div class="user-avatar">VM</div>
+            <div>
+              <div style="font-weight:700; font-size:0.85rem; line-height:1.2;">Vikram Malhotra</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Safety Officer</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <div class="page-body">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Multi-Worker Construction PPE Vision & Safety Directory</h1>
+            <p class="page-subtitle">Real-time multi-worker detection of Construction Safety Helmets & High-Visibility Vests with individual worker compliance assessment.</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-cyan" onclick="openAddWorkerModal()" style="font-weight:700;">
+              <span>👤➕</span> Register Worker
+            </button>
+            <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+              🔄 Reset All
+            </button>
+          </div>
+        </div>
+
+        <!-- ==========================================================================
+             Requirement: Multi-Worker Construction PPE Detection Dashboard
+             ========================================================================== -->
+        <section class="ppe-multi-dashboard">
+          
+          <!-- Top Status Bar & API Backend Configuration -->
+          <div class="ppe-header-status-bar">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <span class="dot dot-safe" id="backend-status-dot"></span>
+              <strong id="backend-status-text" style="font-size:0.85rem; color:var(--text-primary);">Checking Inference Engine...</strong>
+              <span class="badge badge-safe" id="backend-engine-badge" style="font-size:0.7rem;">YOLOv8 + ByteTrack</span>
+              <span class="badge badge-cyan" style="font-size:0.7rem;">Classes: person, helmet, vest</span>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn btn-outline btn-sm" onclick="openApiConfigModal()" style="font-size:0.75rem; padding:4px 10px;">
+                ⚙️ API Backend URL
+              </button>
+              <div class="dropdown" style="position:relative; display:inline-block;">
+                <button class="btn btn-cyan btn-sm" onclick="toggleReportDropdown()" style="font-size:0.75rem; padding:4px 10px; font-weight:700;">
+                  📥 Download Report ▾
+                </button>
+                <div id="report-dropdown-menu" style="display:none; position:absolute; right:0; top:100%; margin-top:4px; background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); box-shadow:var(--shadow-md); z-index:100; min-width:160px; padding:6px 0;">
+                  <a href="javascript:void(0)" onclick="SafeGuardPPE.downloadReport('csv'); toggleReportDropdown();" style="display:block; padding:8px 14px; font-size:0.8rem; color:var(--text-primary); text-decoration:none;">📊 Export CSV Audit</a>
+                  <a href="javascript:void(0)" onclick="SafeGuardPPE.downloadReport('json'); toggleReportDropdown();" style="display:block; padding:8px 14px; font-size:0.8rem; color:var(--text-primary); text-decoration:none;">📋 Export JSON Data</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7 Dashboard KPI Metric Stat Cards -->
+          <div class="ppe-stats-grid">
+            <div class="ppe-stat-card">
+              <div class="ppe-stat-value text-primary" id="stat-total-workers">0</div>
+              <div class="ppe-stat-label">Total Workers Detected</div>
+            </div>
+            <div class="ppe-stat-card stat-safe">
+              <div class="ppe-stat-value text-success" id="stat-compliant-workers">0</div>
+              <div class="ppe-stat-label">Fully Compliant (Safe)</div>
+            </div>
+            <div class="ppe-stat-card stat-danger">
+              <div class="ppe-stat-value text-danger" id="stat-missing-helmets">0</div>
+              <div class="ppe-stat-label">Missing Helmet</div>
+            </div>
+            <div class="ppe-stat-card stat-orange">
+              <div class="ppe-stat-value text-orange" id="stat-missing-vests">0</div>
+              <div class="ppe-stat-label">Missing Vest</div>
+            </div>
+            <div class="ppe-stat-card stat-dark-red">
+              <div class="ppe-stat-value text-dark-red" id="stat-missing-both">0</div>
+              <div class="ppe-stat-label">Missing Both (H & V)</div>
+            </div>
+            <div class="ppe-stat-card stat-yellow">
+              <div class="ppe-stat-value text-yellow" id="stat-uncertain-workers">0</div>
+              <div class="ppe-stat-label">Uncertain Detections</div>
+            </div>
+            <div class="ppe-stat-card stat-overall">
+              <div class="ppe-stat-value text-cyan" id="stat-ppe-compliance-pct">100%</div>
+              <div class="ppe-stat-label">PPE Compliance %</div>
+              <div id="stat-excluded-notice" style="font-size:0.62rem; color:var(--text-secondary); margin-top:2px; display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Input Mode Selector Tabs -->
+          <div class="ppe-mode-tabs">
+            <button class="ppe-mode-tab active" data-mode="image" onclick="SafeGuardPPE.setMode('image')">
+              <span>📷</span> Image Upload
+            </button>
+            <button class="ppe-mode-tab" data-mode="video" onclick="SafeGuardPPE.setMode('video')">
+              <span>🎬</span> Video Upload
+            </button>
+            <button class="ppe-mode-tab" data-mode="webcam" onclick="SafeGuardPPE.setMode('webcam')">
+              <span>📹</span> Live Webcam
+            </button>
+            <button class="ppe-mode-tab" data-mode="cctv" onclick="SafeGuardPPE.setMode('cctv')">
+              <span>📡</span> CCTV / RTSP Stream
+            </button>
+          </div>
+
+          <!-- Main 2-Column Detection Stage -->
+          <div class="ppe-stage-grid">
+            
+            <!-- Left: Viewport & Controls -->
+            <div class="ppe-canvas-card">
+              
+              <!-- Mode A: Image Upload Dropzone -->
+              <div id="ppe-image-input-container">
+                <div class="ppe-dropzone" onclick="document.getElementById('image-file-input').click()">
+                  <input type="file" id="image-file-input" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="SafeGuardPPE.processImageUpload(this.files[0])">
+                  <div style="font-size:2rem; margin-bottom:8px;">📁</div>
+                  <strong style="color:var(--text-primary); font-size:0.95rem;">Click or Drag & Drop Image Here</strong>
+                  <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;">Supports JPG, JPEG, PNG, WEBP (Evaluates all visible workers simultaneously)</div>
+                </div>
+              </div>
+
+              <!-- Mode B: Video Upload Dropzone -->
+              <div id="ppe-video-input-container" style="display:none;">
+                <div class="ppe-dropzone" onclick="document.getElementById('video-file-input').click()">
+                  <input type="file" id="video-file-input" accept="video/mp4,video/webm" style="display:none;" onchange="SafeGuardPPE.processVideoUpload(this.files[0])">
+                  <div style="font-size:2rem; margin-bottom:8px;">🎬</div>
+                  <strong style="color:var(--text-primary); font-size:0.95rem;">Click or Drag & Drop MP4 Video File</strong>
+                  <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;">Tracks workers across sequential frames with ByteTrack multi-object tracking</div>
+                </div>
+              </div>
+
+              <!-- Mode C: Live Webcam Controls -->
+              <div id="ppe-webcam-controls" style="display:none; gap:10px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
+                <button class="btn btn-cyan btn-sm" onclick="SafeGuardPPE.startWebcam()" style="font-weight:700;">
+                  ▶️ Start Webcam
+                </button>
+                <button class="btn btn-outline btn-sm" id="btn-webcam-pause" onclick="SafeGuardPPE.togglePause()">
+                  ⏸️ Pause
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="SafeGuardPPE.stopAllStreams(); SafeGuardPPE.renderStandbyCanvas('Webcam stopped.');">
+                  ⏹️ Stop
+                </button>
+                <span class="mono" id="live-ppe-fps" style="font-size:0.8rem; color:var(--cyan); margin-left:auto;">0 FPS</span>
+              </div>
+
+              <!-- Mode D: CCTV Stream Controls -->
+              <div id="ppe-cctv-controls" style="display:none; gap:10px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="cctv-url-input" class="form-control" placeholder="rtsp://admin:password@192.168.1.100:554/stream1 or http://..." style="flex:1; font-size:0.82rem;">
+                <button class="btn btn-cyan btn-sm" onclick="SafeGuardPPE.connectCCTVStream()" style="font-weight:700;">
+                  📡 Connect CCTV Stream
+                </button>
+              </div>
+
+              <!-- Benchmark Evaluation & Accuracy Validation Presets Bar -->
+              <div class="ppe-test-presets-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); padding:8px 12px; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:0.9rem;">🧪</span>
+                  <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">Validation Presets:</span>
+                </div>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('crowd_50')" style="font-size:0.72rem; padding:3px 7px;" title="Test crowded construction site with 10–50 workers">
+                    👥 10–50 Workers
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('overlap_workers')" style="font-size:0.72rem; padding:3px 7px;" title="Test overlapping workers with greedy spatial association">
+                    🔀 Overlapping Workers
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('helmet_missing')" style="font-size:0.72rem; padding:3px 7px;" title="Test helmet violation">
+                    ⛑️ Helmet Missing
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('vest_missing')" style="font-size:0.72rem; padding:3px 7px;" title="Test reflective vest violation">
+                    🦺 Vest Missing
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('both_missing')" style="font-size:0.72rem; padding:3px 7px;" title="Test both items missing">
+                    🚨 Both Missing
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.loadSampleScene('distant_uncertain')" style="font-size:0.72rem; padding:3px 7px;" title="Test distant / clipped uncertain worker">
+                    ⚠️ Uncertain / Distant
+                  </button>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button type="button" id="btn-toggle-test-mode" class="btn btn-outline btn-sm" onclick="SafeGuardPPE.toggleTestMode()" style="font-size:0.72rem; padding:3px 8px; color:var(--cyan); border-color:var(--cyan);">
+                    🎯 Test Mode: OFF
+                  </button>
+                  <button type="button" class="btn btn-cyan btn-sm" onclick="SafeGuardPPE.runAccuracyBenchmarkModal()" style="font-size:0.72rem; padding:3px 8px; font-weight:700;">
+                    📊 Accuracy Metrics
+                  </button>
+                </div>
+              </div>
+
+              <!-- Canvas Viewport -->
+              <div class="ppe-canvas-wrapper">
+                <canvas id="ppe-detection-canvas" width="640" height="380"></canvas>
+                <video id="ppe-detection-video" playsinline muted style="display:none;"></video>
+              </div>
+
+              <!-- Stage Calibration Controls -->
+              <div class="ppe-stage-controls">
+                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); font-weight:700;">Confidence Threshold:</label>
+                    <input type="range" id="slider-conf-thresh" min="0.15" max="0.85" step="0.05" value="0.35" style="width:90px;" oninput="document.getElementById('val-conf-thresh').textContent = Math.round(this.value*100)+'%'; SafeGuardPPE.confThreshold = parseFloat(this.value);">
+                    <span class="mono text-cyan" id="val-conf-thresh" style="font-size:0.75rem;">35%</span>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <label style="font-size:0.75rem; color:var(--text-secondary); font-weight:700;">IoU Threshold:</label>
+                    <input type="range" id="slider-iou-thresh" min="0.2" max="0.8" step="0.05" value="0.45" style="width:80px;" oninput="document.getElementById('val-iou-thresh').textContent = Math.round(this.value*100)+'%'; SafeGuardPPE.iouThreshold = parseFloat(this.value);">
+                    <span class="mono text-cyan" id="val-iou-thresh" style="font-size:0.75rem;">45%</span>
+                  </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button class="btn btn-outline btn-sm text-cyan" id="btn-toggle-voice-alerts" onclick="SafeGuardPPE.toggleVoiceAlerts()" style="font-size:0.75rem; padding:3px 8px;">
+                    🔊 Voice Callouts: ON
+                  </button>
+                  <button class="btn btn-outline btn-sm" onclick="SafeGuardPPE.testVoiceCallout()" style="font-size:0.75rem; padding:3px 8px;" title="Test Voice Alert Callout with Name">
+                    📢 Test Callout
+                  </button>
+                  <span style="font-size:0.75rem; color:var(--text-secondary);">Tracker:</span>
+                  <select id="select-tracker-algorithm" class="select-filter" style="padding:2px 6px; font-size:0.72rem;" onchange="SafeGuardPPE.setTrackerAlgorithm(this.value)">
+                    <option value="bytetrack" selected>ByteTrack</option>
+                    <option value="botsort">BoT-SORT</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right: Diagnostics & Live Violation Feed -->
+            <div class="ppe-side-panel">
+              
+              <!-- Detection Diagnostics Card -->
+              <div class="ppe-telemetry-box">
+                <div style="font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; display:flex; justify-content:space-between;">
+                  <span>Industrial Vision Diagnostics</span>
+                  <span class="badge badge-cyan" style="font-size:0.65rem;">OSHA / EN 397</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem;">
+                  <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Target Model:</span>
+                    <strong class="text-cyan">YOLOv8 Construction PPE</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Allowed Classes:</span>
+                    <span class="mono font-bold" style="color:var(--text-primary);">person, helmet, vest</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Spatial Association:</span>
+                    <span class="text-success font-bold">Head (35%) / Torso (20-70%)</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Compliance Formula:</span>
+                    <span class="mono" style="font-size:0.75rem; color:var(--text-secondary);">Compliant / Assessable × 100</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Violation Event Log -->
+              <div class="ppe-violations-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <strong style="font-size:0.82rem; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.03em;">
+                    🚨 Live Violation Event Log
+                  </strong>
+                  <span class="dot dot-live" style="width:7px; height:7px;"></span>
+                </div>
+                <div id="ppe-violations-event-list" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto;">
+                  <div style="padding:16px; text-align:center; color:var(--text-secondary); font-size:0.8rem;">
+                    No violations recorded yet. Detection stream running.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Individual Worker Status Cards -->
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <div>
+                <h3 style="font-size:1.05rem; font-weight:700; margin:0; color:var(--text-primary);">
+                  👷 Individual Worker PPE Status Cards
+                </h3>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin:2px 0 0;">
+                  Worker-by-worker assessment with independent helmet and high-visibility vest adherence.
+                </p>
+              </div>
+              <div style="display:flex; gap:8px; font-size:0.75rem;">
+                <span class="badge badge-safe">● Safe: Helmet ✓ + Vest ✓</span>
+                <span class="badge badge-danger">● Missing: Helmet ✗ or Vest ✗</span>
+                <span class="badge badge-warning">● Uncertain: Low Res / Occluded</span>
+              </div>
+            </div>
+
+            <div class="worker-cards-grid" id="individual-worker-cards-container">
+              <!-- Populated dynamically by SafeGuardPPE.renderWorkerCards() -->
+              <div style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--text-secondary); background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">
+                No workers currently detected in the active frame. Upload an image, video, or start camera.
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Worker Management Table Wrapper (Requirement 16) -->
+        <div class="data-table-wrapper">
+          <div class="table-toolbar">
+            <div class="search-bar" style="width:300px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="worker-search-input" placeholder="Search by name, ID, or dept...">
+            </div>
+
+            <div class="table-filters">
+              <!-- Filter by Risk -->
+              <select class="select-filter" id="worker-risk-filter">
+                <option value="All">All Risk Statuses</option>
+                <option value="Safe">Safe (Optimal)</option>
+                <option value="Warning">Warning (Review Needed)</option>
+                <option value="High Risk">High Risk (Action Required)</option>
+              </select>
+
+              <!-- Sort by Score -->
+              <select class="select-filter" id="worker-sort-select">
+                <option value="score-desc">Score: Highest First</option>
+                <option value="score-asc">Score: Lowest First</option>
+                <option value="ppe-desc">PPE Compliance: Highest</option>
+                <option value="name-asc">Alphabetical: A-Z</option>
+              </select>
+            </div>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Face & Worker ID</th>
+                <th>Full Name & Shift</th>
+                <th>Department</th>
+                <th>PPE Adherence</th>
+                <th>Safety Score</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="workers-table-body">
+              <!-- Populated dynamically by workers.js -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Worker Profile Modal (Requirement 17) -->
+  <div class="modal-backdrop" id="worker-profile-modal">
+    <div class="modal-box" style="max-width:650px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div id="modal-worker-avatar-container">
+            <div class="user-avatar" id="modal-worker-avatar" style="width:48px; height:48px; font-size:1.1rem;">RP</div>
+          </div>
+          <div>
+            <h3 class="modal-title" id="modal-worker-name">Worker Name</h3>
+            <div class="mono" style="font-size:0.85rem; color:var(--cyan);" id="modal-worker-id">W-1001</div>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="SafeGuardApp.closeModal('worker-profile-modal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Gauge & Profile Top -->
+        <div style="display:grid; grid-template-columns: 200px 1fr; gap:24px; align-items:center; margin-bottom:24px;">
+          <!-- Circular Gauge: 92 / 100 Worker Safety Compliance Score -->
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; width:150px; height:150px; margin:0 auto;">
+            <svg viewBox="0 0 150 150" style="width:100%; height:100%; transform:rotate(-90deg);">
+              <circle cx="75" cy="75" r="60" fill="none" stroke="var(--bg-tertiary)" stroke-width="12"></circle>
+              <circle id="worker-gauge-circle" cx="75" cy="75" r="60" fill="none" stroke="var(--cyan)" stroke-width="12" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease;"></circle>
+            </svg>
+            <div style="position:absolute; text-align:center;">
+              <div class="mono" style="font-size:1.8rem; font-weight:800; color:var(--text-primary); line-height:1;"><span id="worker-gauge-val">100</span> <span style="font-size:0.95rem; color:var(--text-secondary);">/ 100</span></div>
+              <div style="font-size:0.62rem; color:var(--text-secondary); text-transform:uppercase; margin-top:4px; font-weight:700; line-height:1.2; max-width:90px; margin-left:auto; margin-right:auto;">Worker Safety Compliance Score</div>
+            </div>
+          </div>
+
+          <!-- Metadata -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:0.85rem;">
+            <div>
+              <span style="color:var(--text-secondary);">Department:</span><br/>
+              <strong id="modal-worker-dept">Assembly</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-secondary);">Facility Location:</span><br/>
+              <strong id="modal-worker-location" class="text-cyan">Pune Plant Floor</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-secondary);">Current Shift:</span><br/>
+              <strong id="modal-worker-shift">Morning (06:00 - 14:00)</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-secondary);">Training Status:</span><br/>
+              <strong id="modal-worker-training" class="text-success">Certified (Level 3)</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-secondary);">Logged Incidents:</span><br/>
+              <strong id="modal-worker-incidents">0</strong>
+            </div>
+            <div>
+              <span style="color:var(--text-secondary);">Near Misses:</span><br/>
+              <strong id="modal-worker-nearmisses">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakdown Bars (Requirement 17) -->
+        <h4 style="font-size:0.95rem; margin-bottom:14px; border-top:1px solid var(--border-light); padding-top:16px;">
+          Safety Compliance Breakdown
+        </h4>
+
+        <div class="metric-bar-group">
+          <div>
+            <div class="metric-row">
+              <span>Helmet Compliance</span>
+              <span class="mono font-bold" id="val-worker-helmet">98%</span>
+            </div>
+            <div class="metric-progress-bg">
+              <div class="metric-progress-fill" id="bar-worker-helmet" style="width:98%; background:var(--success);"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <span>Safety Vest Compliance</span>
+              <span class="mono font-bold" id="val-worker-vest">95%</span>
+            </div>
+            <div class="metric-progress-bg">
+              <div class="metric-progress-fill" id="bar-worker-vest" style="width:95%; background:var(--cyan);"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <span>Safety Protocol Compliance</span>
+              <span class="mono font-bold" id="val-worker-zone">100%</span>
+            </div>
+            <div class="metric-progress-bg">
+              <div class="metric-progress-fill" id="bar-worker-zone" style="width:100%; background:var(--blue);"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="metric-row">
+              <span>Safety Training Score</span>
+              <span class="mono font-bold" id="val-worker-train">90%</span>
+            </div>
+            <div class="metric-progress-bg">
+              <div class="metric-progress-fill" id="bar-worker-train" style="width:90%; background:var(--warning);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi-Angle Biometric Photos Section (when 3 angles enrolled) -->
+        <div id="modal-worker-multiangle-section" style="margin-top:20px; display:none; border-top:1px solid var(--border-light); padding-top:16px;">
+          <h4 style="font-size:0.95rem; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <span>👤 Head Pose Biometric Visibility</span>
+            </span>
+            <span class="badge badge-safe" style="font-size:0.7rem;">3-Angle Enrolled</span>
+          </h4>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; text-align:center;">
+            <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px;">
+              <div style="font-size:0.72rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700;">🎯 1. Center (Front)</div>
+              <img id="modal-angle-center-img" src="" alt="Center Face" style="width:100%; height:90px; object-fit:cover; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            </div>
+            <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px;">
+              <div style="font-size:0.72rem; color:var(--cyan); margin-bottom:6px; font-weight:700;">⬅️ 2. Left Profile</div>
+              <img id="modal-angle-left-img" src="" alt="Left Profile" style="width:100%; height:90px; object-fit:cover; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            </div>
+            <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-sm); padding:10px;">
+              <div style="font-size:0.72rem; color:var(--orange); margin-bottom:6px; font-weight:700;">➡️ 3. Right Profile</div>
+              <img id="modal-angle-right-img" src="" alt="Right Profile" style="width:100%; height:90px; object-fit:cover; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="SafeGuardApp.closeModal('worker-profile-modal')">Close</button>
+        <button class="btn btn-primary btn-sm" onclick="SafeGuardApp.showToast('Training Scheduled', 'Mandatory refresher briefing scheduled for worker.', 'success')">Schedule Training</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Worker Modal -->
+  <div class="modal-backdrop" id="add-worker-modal">
+    <div class="modal-box" style="max-width:620px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.4rem;">👤➕</span>
+          <h3 class="modal-title">Register Industrial Worker & Face Profile</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeAddWorkerModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="add-worker-form" onsubmit="handleSaveWorker(event)">
+          
+          <!-- Face Photo Section -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; text-align:center;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--cyan); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.04em;">
+              Worker Face Identity & Biometric Photo
+            </div>
+
+            <!-- Face Preview Box -->
+            <div class="worker-face-preview-box" id="new-worker-face-preview" onclick="triggerFaceFileInput()" title="Click to upload photo">
+              <div class="worker-face-preview-placeholder" id="face-preview-placeholder">
+                <span style="font-size:1.8rem;">📷</span>
+                <span>Upload Face</span>
+              </div>
+              <img id="face-preview-img" src="" alt="Worker Face" class="worker-face-preview-img" style="display:none;">
+            </div>
+
+            <!-- Hidden File Input -->
+            <input type="file" id="worker-face-file-input" accept="image/*" style="display:none;" onchange="handleFaceFileSelect(event)">
+
+            <!-- Photo Options Buttons -->
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:8px;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="triggerFaceFileInput()">
+                📁 Upload Face Photo
+              </button>
+              <button type="button" class="btn btn-cyan btn-sm" id="btn-start-webcam-face" onclick="toggleWebcamFaceCapture()">
+                📸 Snap via Webcam
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" id="btn-clear-face" onclick="clearFacePhoto()" style="display:none;">
+                ✕ Clear Photo
+              </button>
+            </div>
+
+            <!-- Multi-Angle Webcam Capture Viewport (collapsible) -->
+            <div id="webcam-capture-panel" style="display:none; margin-top:14px; padding-top:14px; border-top:1px dashed var(--border-light);">
+              
+              <!-- Multi-Angle Step Navigation Ribbon -->
+              <div class="multi-angle-step-ribbon">
+                <div class="multi-angle-step-pill active" id="step-pill-center">
+                  <span>🎯 1. Center (Front)</span>
+                  <span id="step-check-center" style="display:none;">✓</span>
+                </div>
+                <div class="multi-angle-step-pill" id="step-pill-left">
+                  <span>⬅️ 2. Look Left</span>
+                  <span id="step-check-left" style="display:none;">✓</span>
+                </div>
+                <div class="multi-angle-step-pill" id="step-pill-right">
+                  <span>➡️ 3. Look Right</span>
+                  <span id="step-check-right" style="display:none;">✓</span>
+                </div>
+              </div>
+
+              <!-- Real-Time Guidance Banner -->
+              <div class="multi-angle-guidance-banner" id="multi-angle-banner">
+                <span id="banner-icon" style="font-size:1.1rem;">🎯</span>
+                <span id="banner-text">Step 1 of 3: Look straight at camera (Center Face)</span>
+              </div>
+
+              <!-- Camera Viewport with Video & Overlay Canvas -->
+              <div class="webcam-capture-viewport" id="webcam-viewport-box" style="position:relative;">
+                <video id="webcam-face-video" autoplay playsinline muted></video>
+                <canvas id="webcam-face-canvas"></canvas>
+                <div class="webcam-face-reticle" id="webcam-face-reticle"></div>
+
+                <!-- Live HUD Telemetry Chips -->
+                <div style="position:absolute; top:8px; left:8px; z-index:5;">
+                  <span id="webcam-hud-badge" class="badge badge-orange" style="font-size:0.7rem; padding:3px 8px;">
+                    Detecting Pose...
+                  </span>
+                </div>
+                <div style="position:absolute; top:8px; right:8px; z-index:5;">
+                  <span id="webcam-hud-angle" class="mono text-cyan" style="background:rgba(11,15,20,0.75); padding:3px 8px; border-radius:4px; font-size:0.75rem; border:1px solid rgba(56,189,248,0.3);">
+                    Yaw: 0°
+                  </span>
+                </div>
+
+                <!-- Hold Progress Bar -->
+                <div id="webcam-hold-container" style="position:absolute; bottom:8px; left:16px; right:16px; height:6px; background:rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.2); border-radius:3px; overflow:hidden; display:none; z-index:5;">
+                  <div id="webcam-hold-fill" style="width:0%; height:100%; background:var(--success); transition:width 0.08s linear;"></div>
+                </div>
+              </div>
+
+              <!-- 3-Angle Snapshot Preview Strip -->
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px; text-align:center;">
+                <!-- 1. Center Thumbnail Card -->
+                <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px;" onclick="MultiAngleEnrollment.selectStep('center')" title="Click to retake Center angle">
+                  <div style="font-size:0.72rem; font-weight:700; color:var(--text-secondary); margin-bottom:4px;">🎯 Center (Front)</div>
+                  <div class="multi-angle-thumb-box" id="thumb-box-center">
+                    <span class="thumb-placeholder" id="placeholder-center">Waiting...</span>
+                    <img id="thumb-img-center" src="" alt="Center Face" style="display:none;">
+                  </div>
+                  <span id="badge-status-center" class="badge badge-outline" style="font-size:0.65rem; padding:2px 6px;">Pending</span>
+                </div>
+
+                <!-- 2. Left Thumbnail Card -->
+                <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px;" onclick="MultiAngleEnrollment.selectStep('left')" title="Click to retake Left angle">
+                  <div style="font-size:0.72rem; font-weight:700; color:var(--cyan); margin-bottom:4px;">⬅️ Look Left</div>
+                  <div class="multi-angle-thumb-box" id="thumb-box-left">
+                    <span class="thumb-placeholder" id="placeholder-left">Waiting...</span>
+                    <img id="thumb-img-left" src="" alt="Left Profile" style="display:none;">
+                  </div>
+                  <span id="badge-status-left" class="badge badge-outline" style="font-size:0.65rem; padding:2px 6px;">Pending</span>
+                </div>
+
+                <!-- 3. Right Thumbnail Card -->
+                <div style="background:var(--bg-tertiary); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px;" onclick="MultiAngleEnrollment.selectStep('right')" title="Click to retake Right angle">
+                  <div style="font-size:0.72rem; font-weight:700; color:var(--orange); margin-bottom:4px;">➡️ Look Right</div>
+                  <div class="multi-angle-thumb-box" id="thumb-box-right">
+                    <span class="thumb-placeholder" id="placeholder-right">Waiting...</span>
+                    <img id="thumb-img-right" src="" alt="Right Profile" style="display:none;">
+                  </div>
+                  <span id="badge-status-right" class="badge badge-outline" style="font-size:0.65rem; padding:2px 6px;">Pending</span>
+                </div>
+              </div>
+
+              <!-- Multi-Angle Controls Toolbar -->
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:12px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button type="button" class="btn btn-cyan btn-sm" id="btn-snap-current-angle" onclick="MultiAngleEnrollment.snapCurrentAngle(true)">
+                    📸 Snap Current Angle
+                  </button>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleEnrollment.resetSequence()" title="Reset all 3 angle snapshots">
+                    🔄 Retake
+                  </button>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <label style="font-size:0.75rem; color:var(--text-secondary); display:flex; align-items:center; gap:4px; cursor:pointer;">
+                    <input type="checkbox" id="check-auto-detect-snap" checked onchange="MultiAngleEnrollment.autoCapture = this.checked">
+                    <span>Auto-Snap on Pose</span>
+                  </label>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="stopWebcamFaceCapture()">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              <!-- Finalize Multi-Angle Profile Button (appears when finished or at least center captured) -->
+              <div id="btn-apply-multiangle-container" style="display:none; margin-top:12px;">
+                <button type="button" class="btn btn-safe btn-sm" style="width:100%; justify-content:center; font-weight:700;" onclick="MultiAngleEnrollment.finishEnrollment()">
+                  ✓ Apply Registered Multi-Angle Face Profile
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Quick Avatar Presets -->
+            <div style="margin-top:12px; font-size:0.75rem; color:var(--text-secondary);">
+              <span>Or choose quick safety avatar: </span>
+              <span style="font-size:1.2rem; cursor:pointer; margin-left:6px;" onclick="selectAvatarPreset('👷‍♂️')" title="Construction Helmet Male">👷‍♂️</span>
+              <span style="font-size:1.2rem; cursor:pointer; margin-left:6px;" onclick="selectAvatarPreset('👷‍♀️')" title="Construction Helmet Female">👷‍♀️</span>
+              <span style="font-size:1.2rem; cursor:pointer; margin-left:6px;" onclick="selectAvatarPreset('👨‍🏭')" title="Industrial Welder">👨‍🏭</span>
+              <span style="font-size:1.2rem; cursor:pointer; margin-left:6px;" onclick="selectAvatarPreset('👩‍🏭')" title="Industrial Technician">👩‍🏭</span>
+              <span style="font-size:1.2rem; cursor:pointer; margin-left:6px;" onclick="selectAvatarPreset('🧑‍💼')" title="Safety Supervisor">🧑‍💼</span>
+            </div>
+          </div>
+
+          <!-- Name & ID Row -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="worker-input-name">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="worker-input-name" placeholder="e.g. Rahul Patil" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="worker-input-id">Worker ID</label>
+              <input type="text" class="form-control mono" id="worker-input-id" placeholder="e.g. W-1001" required>
+            </div>
+          </div>
+
+          <!-- Department & Shift Row (Typeable at registration time with suggestions) -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="worker-input-dept">Department <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="worker-input-dept" placeholder="Type department (e.g. Assembly, Welding, Civil...)" list="worker-dept-datalist" required>
+              <datalist id="worker-dept-datalist">
+                <option value="Assembly Operations">
+                <option value="Machine Shop / Robotics">
+                <option value="Chemical Operations">
+                <option value="Logistics & Loading">
+                <option value="Warehouse Operations">
+                <option value="Robotics Maintenance">
+                <option value="Safety & EHS Marshals">
+                <option value="Fabrication Bay">
+                <option value="Civil & Structural Works">
+                <option value="Electrical & Power Maintenance">
+              </datalist>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label" for="worker-input-shift">Work Shift <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="worker-input-shift" placeholder="Type shift (e.g. Morning, Night, General Shift...)" list="worker-shift-datalist" required>
+              <datalist id="worker-shift-datalist">
+                <option value="Morning (06:00 - 14:00)">
+                <option value="Afternoon (14:00 - 22:00)">
+                <option value="Night (22:00 - 06:00)">
+                <option value="General Shift (08:30 - 17:30)">
+                <option value="Rotational 12-Hour Day">
+                <option value="Rotational 12-Hour Night">
+              </datalist>
+            </div>
+          </div>
+
+          <!-- Training Status Row (Typeable at registration time with suggestions) -->
+          <div class="form-group" style="margin-bottom:20px;">
+            <label class="form-label" for="worker-input-training">Training Status <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="worker-input-training" placeholder="Type training status (e.g. Certified Level 3, Under Induction...)" list="worker-training-datalist" required>
+            <datalist id="worker-training-datalist">
+              <option value="Certified (Level 3)">
+              <option value="Certified (Level 2)">
+              <option value="Certified (Level 1)">
+              <option value="HazMat Specialist">
+              <option value="Forklift Certified">
+              <option value="Safety Induction Completed">
+              <option value="Under Training / Probation">
+              <option value="Refresher Mandatory">
+            </datalist>
+          </div>
+
+          <!-- Form Actions -->
+          <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button type="button" class="btn btn-outline" onclick="closeAddWorkerModal()">Cancel</button>
+            <button type="submit" class="btn btn-cyan" style="padding:10px 24px;">
+              <span>✓</span> Register Worker
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backend API Configuration Modal -->
+  <div class="modal-backdrop" id="api-config-modal">
+    <div class="modal-box" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ AI Inference Backend Configuration</h3>
+        <button class="modal-close-btn" onclick="closeApiConfigModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+          Configure your Python FastAPI inference server URL. This connects your SafeGuard-AI interface (whether hosted locally or on GitHub Pages) to the YOLOv8 + ByteTrack multi-worker detection engine.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="api-backend-url-input">FastAPI Backend URL</label>
+          <input type="text" id="api-backend-url-input" class="form-control mono" placeholder="http://127.0.0.1:8000">
+          <small style="color:var(--text-muted); font-size:0.72rem; margin-top:4px; display:block;">
+            Default local: <code>http://127.0.0.1:8000</code> | Cloud: <code>https://your-service.up.railway.app</code>
+          </small>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px;">
+          <button class="btn btn-outline btn-sm" onclick="testBackendConnection()">Test Connection</button>
+          <span id="api-test-result" style="font-size:0.8rem; font-weight:700;"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeApiConfigModal()">Cancel</button>
+        <button class="btn btn-cyan btn-sm" onclick="saveApiBackendUrl()">Save & Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/multi-angle-face-detector.js"></script>
+  <script src="js/multi-worker-detector.js"></script>
+  <script src="js/workers.js"></script>
+</body>
+</html>

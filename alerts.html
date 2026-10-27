@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeGuard AI — Real-Time Alert Center</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="brand-logo" style="font-size:1.15rem;">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(34, 211, 238, 0.2)" stroke="var(--cyan)"/>
+            <path d="M9 12l2 2 4-4" stroke="var(--cyan)" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>SafeGuard <span class="text-cyan">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="monitoring.html" class="nav-item">
+          <span class="icon">📹</span>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="workers.html" class="nav-item">
+          <span class="icon">👷</span>
+          <span>Workers</span>
+        </a>
+        <a href="alerts.html" class="nav-item active">
+          <span class="icon">🔔</span>
+          <span>Alerts</span>
+        </a>
+        <a href="incidents.html" class="nav-item">
+          <span class="icon">🚨</span>
+          <span>Incidents</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <span class="icon">📈</span>
+          <span>Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">DISPATCH BUS</div>
+        <div style="font-weight:700; color:var(--text-secondary); margin-bottom:8px;">Sub-Second Latency</div>
+        <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" style="width:100%; justify-content:center; font-size:0.75rem; padding:5px 8px;" title="Reset all website data to factory baseline">
+          🔄 Reset All Website
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Topbar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-hamburger" onclick="SafeGuardApp.toggleMobileSidebar()" aria-label="Toggle navigation">☰</button>
+          <div class="facility-badge">
+            <span style="font-size:1.1rem;">🏭</span>
+            <span>Pune Manufacturing Plant</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="sys-status-badge">
+            <span class="dot dot-safe"></span>
+            <span>All Systems Operational</span>
+          </div>
+
+          <!-- Reset All Website -->
+          <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+            🔄 Reset
+          </button>
+
+          <button class="btn btn-outline btn-icon" id="theme-toggle-btn" onclick="SafeGuardApp.toggleTheme()">
+            🌙
+          </button>
+
+          <div class="notification-btn-wrapper" id="notif-wrapper">
+            <button class="btn btn-outline btn-icon" onclick="SafeGuardApp.toggleNotificationDropdown()">
+              🔔
+              <span class="notif-count-badge" id="topbar-notif-count" style="display:none;">0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <span>Active Safety Alerts</span>
+                <a href="alerts.html" style="font-size:0.8rem; color:var(--cyan);">View All</a>
+              </div>
+              <div class="notif-list" id="notif-list-items"></div>
+            </div>
+          </div>
+
+          <div class="user-profile-badge">
+            <div class="user-avatar">VM</div>
+            <div>
+              <div style="font-weight:700; font-size:0.85rem; line-height:1.2;">Vikram Malhotra</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Safety Officer</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <div class="page-body">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Real-Time Alert Center</h1>
+            <p class="page-subtitle">Instant hazard notifications, PPE infractions, and environmental anomaly dispatches.</p>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; gap:6px; align-items:center; background:var(--bg-secondary); padding:4px 8px; border-radius:6px; border:1px solid var(--border-light);">
+              <span style="font-size:0.75rem; color:var(--text-secondary); margin-right:4px;">Simulate Test:</span>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-vest')" title="Simulate Worker without Vest">🦺 No Vest</button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-helmet')" title="Simulate Worker without Helmet">⛑️ No Helmet</button>
+              <button type="button" class="btn btn-danger btn-sm" style="font-size:0.75rem; padding:3px 8px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-both')" title="Simulate Worker without Helmet & Vest">🚨 No Both</button>
+            </div>
+            <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to clean baseline">🔄 Reset All</button>
+            <span class="badge badge-safe" style="padding:6px 12px;">● LIVE CAMERA TELEMETRY ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Metric Counter Cards -->
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-bottom:28px;">
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.85rem; color:var(--text-secondary);">Active Alerts</div>
+              <div class="mono text-success" id="alerts-stat-active" style="font-size:2.2rem; font-weight:800; margin-top:4px;">0</div>
+            </div>
+            <div style="font-size:2.2rem;">🔔</div>
+          </div>
+
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.85rem; color:var(--text-secondary);">Critical Alerts</div>
+              <div class="mono text-success" id="alerts-stat-critical" style="font-size:2.2rem; font-weight:800; margin-top:4px;">0</div>
+            </div>
+            <div style="font-size:2.2rem;">🚨</div>
+          </div>
+
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.85rem; color:var(--text-secondary);">Today's Events Logged</div>
+              <div class="mono text-cyan" id="alerts-stat-today" style="font-size:2.2rem; font-weight:800; margin-top:4px;">0</div>
+            </div>
+            <div style="font-size:2.2rem;">📋</div>
+          </div>
+        </div>
+
+        <!-- Filter Toolbar (Requirement 18) -->
+        <div style="display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap;">
+          <button class="btn btn-cyan btn-sm alert-filter-btn" data-filter="ALL">All Alerts</button>
+          <button class="btn btn-outline btn-sm alert-filter-btn" data-filter="CRITICAL">🔴 Critical Only</button>
+          <button class="btn btn-outline btn-sm alert-filter-btn" data-filter="HIGH">🟠 High Severity</button>
+          <button class="btn btn-outline btn-sm alert-filter-btn" data-filter="WARNING">🟡 Warnings</button>
+          <button class="btn btn-outline btn-sm alert-filter-btn" data-filter="ACKNOWLEDGED">✓ Handled / Acknowledged</button>
+        </div>
+
+        <!-- Alert Cards Feed (Requirement 18 & 19) -->
+        <div class="alert-list" id="alerts-container">
+          <!-- Populated dynamically by alerts.js -->
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/live-camera-detector.js"></script>
+  <script src="js/alerts.js"></script>
+</body>
+</html>

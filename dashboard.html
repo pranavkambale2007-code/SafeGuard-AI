@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeGuard AI — Enterprise Safety Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar Navigation (Requirement 6) -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="brand-logo" style="font-size:1.15rem;">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(34, 211, 238, 0.2)" stroke="var(--cyan)"/>
+            <path d="M9 12l2 2 4-4" stroke="var(--cyan)" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>SafeGuard <span class="text-cyan">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item active">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="monitoring.html" class="nav-item">
+          <span class="icon">📹</span>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="workers.html" class="nav-item">
+          <span class="icon">👷</span>
+          <span>Workers</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="icon">🔔</span>
+          <span>Alerts</span>
+        </a>
+        <a href="incidents.html" class="nav-item">
+          <span class="icon">🚨</span>
+          <span>Incidents</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <span class="icon">📈</span>
+          <span>Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">ENTERPRISE ENGINE</div>
+        <div style="font-weight:700; color:var(--text-secondary); margin-bottom:8px;">SafeGuard Core v4.2</div>
+        <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" style="width:100%; justify-content:center; font-size:0.75rem; padding:5px 8px;" title="Reset all website data to factory baseline">
+          🔄 Reset All Website
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Topbar (Requirement 6) -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-hamburger" onclick="SafeGuardApp.toggleMobileSidebar()" aria-label="Toggle navigation">☰</button>
+          <div class="facility-badge">
+            <span style="font-size:1.1rem;">🏭</span>
+            <span>Pune Manufacturing Plant</span>
+          </div>
+
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="global-search" placeholder="Search workers, alerts, incidents...">
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- System Status -->
+          <div class="sys-status-badge">
+            <span class="dot dot-safe"></span>
+            <span>All Systems Operational</span>
+          </div>
+
+          <!-- Reset All Website -->
+          <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+            🔄 Reset
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="btn btn-outline btn-icon" id="theme-toggle-btn" onclick="SafeGuardApp.toggleTheme()" title="Toggle Dark/Light Mode">
+            🌙
+          </button>
+
+          <!-- Notification Dropdown -->
+          <div class="notification-btn-wrapper" id="notif-wrapper">
+            <button class="btn btn-outline btn-icon" onclick="SafeGuardApp.toggleNotificationDropdown()">
+              🔔
+              <span class="notif-count-badge" id="topbar-notif-count" style="display:none;">0</span>
+            </button>
+
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <span>Active Safety Alerts</span>
+                <a href="alerts.html" style="font-size:0.8rem; color:var(--cyan);">View All</a>
+              </div>
+              <div class="notif-list" id="notif-list-items">
+                <!-- Dynamically filled by SafeGuardApp -->
+              </div>
+            </div>
+          </div>
+
+          <!-- User Badge -->
+          <div class="user-profile-badge" onclick="window.location.href='settings.html'">
+            <div class="user-avatar">VM</div>
+            <div>
+              <div style="font-weight:700; font-size:0.85rem; line-height:1.2;">Vikram Malhotra</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Safety Officer</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="page-body">
+
+        <!-- Page Header & Action Controls -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Safety Intelligence Dashboard</h1>
+            <p class="page-subtitle">Real-time computer vision detection, IoT multi-sensor telemetry, and physical risk analytics.</p>
+          </div>
+
+          <!-- Live Camera Trigger -->
+          <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-primary" onclick="openDashboardCameraModal()" style="font-weight:700;">
+              📹 Live PPE Detection Camera
+            </button>
+            <a href="monitoring.html" class="btn btn-outline" style="font-weight:700;">
+              Inspect CCTV Grid →
+            </a>
+            <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+              🔄 Reset All
+            </button>
+          </div>
+        </div>
+
+        <!-- Dashboard KPI Cards -->
+        <div class="kpi-grid">
+          <!-- 1. Overall Safety Score -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Overall Safety Score</div>
+              <div class="kpi-value mono text-success" id="kpi-safety-score">100</div>
+              <div class="kpi-sub">Target: &gt; 85 / 100 (Optimal)</div>
+            </div>
+            <div class="kpi-icon text-success">🛡️</div>
+          </div>
+
+          <!-- 2. Active Workers -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Active Workers</div>
+              <div class="kpi-value mono text-cyan" id="kpi-workers">0</div>
+              <div class="kpi-sub">Registered Workforce</div>
+            </div>
+            <div class="kpi-icon text-cyan">👷</div>
+          </div>
+
+          <!-- 3. Active Alerts -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Active Alerts</div>
+              <div class="kpi-value mono text-success" id="kpi-alerts">0</div>
+              <div class="kpi-sub">All Systems Nominal</div>
+            </div>
+            <div class="kpi-icon text-success">🔔</div>
+          </div>
+
+          <!-- 4. Critical Alerts -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Critical Alerts</div>
+              <div class="kpi-value mono text-success" id="kpi-critical">0</div>
+              <div class="kpi-sub">Zero Active Hazards</div>
+            </div>
+            <div class="kpi-icon text-success">🚨</div>
+          </div>
+
+          <!-- 5. Today's Incidents -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">Today's Incidents</div>
+              <div class="kpi-value mono text-success" id="kpi-incidents">0</div>
+              <div class="kpi-sub">Clean Safety Record</div>
+            </div>
+            <div class="kpi-icon text-success">📋</div>
+          </div>
+
+          <!-- 6. PPE Compliance -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">PPE Compliance</div>
+              <div class="kpi-value mono text-cyan" id="kpi-ppe">100%</div>
+              <div class="kpi-sub">Helmet 100% • Vest 100%</div>
+            </div>
+            <div class="kpi-icon text-cyan">⛑️</div>
+          </div>
+
+          <!-- 7. AI Model Accuracy -->
+          <div class="kpi-card">
+            <div class="kpi-info">
+              <div class="kpi-label">AI Accuracy</div>
+              <div class="kpi-value mono text-success" id="kpi-ai-accuracy">99.4%</div>
+              <div class="kpi-sub">High Precision Vision</div>
+            </div>
+            <div class="kpi-icon text-success">🧠</div>
+          </div>
+
+          <!-- 8. Active Cameras -->
+          <div class="kpi-card" onclick="window.location.href='monitoring.html#live-camera-container'" style="cursor:pointer;" title="Click to open Live Camera PPE Inspection Console">
+            <div class="kpi-info">
+              <div class="kpi-label">Active Cameras</div>
+              <div class="kpi-value mono" id="kpi-cameras">24 / 24</div>
+              <div class="kpi-sub">100% Stream Health • <span class="text-cyan">Inspect Live →</span></div>
+            </div>
+            <div class="kpi-icon">📹</div>
+          </div>
+        </div>
+
+        <!-- Middle Section: Safety Gauge + Two-Sided Safety Intelligence -->
+        <div style="display:grid; grid-template-columns: 340px 1fr; gap:24px; margin-bottom:30px;">
+
+          <!-- Circular Safety Score Gauge -->
+          <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+            <div class="card-header" style="width:100%; justify-content:center;">
+              <h2 class="card-title">Facility Safety Index</h2>
+            </div>
+
+            <div class="gauge-container">
+              <svg class="gauge-svg" viewBox="0 0 200 200">
+                <circle class="gauge-bg" cx="100" cy="100" r="90"></circle>
+                <circle class="gauge-progress" id="gauge-circle-progress" cx="100" cy="100" r="90"></circle>
+              </svg>
+              <div class="gauge-center-content">
+                <div class="gauge-score mono text-success" id="gauge-score-value">100</div>
+                <div class="gauge-label">Safety Score</div>
+                <div id="gauge-status-badge" class="badge badge-safe">Status: Optimal</div>
+              </div>
+            </div>
+
+            <div style="font-size:0.8rem; color:var(--text-secondary); margin-top:16px; max-width:240px;">
+              Multi-factor score evaluated from 24 camera feeds, 68 sensor nodes, and live workforce telemetry.
+            </div>
+          </div>
+
+          <!-- Two-Sided Safety Intelligence -->
+          <div style="display:flex; flex-direction:column;">
+
+            <div class="safety-intelligence-grid">
+              <!-- Card 1: Worker Safety Compliance -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">👷 Worker Safety Compliance</h3>
+                  <div class="mono text-success" id="two-sided-worker-score" style="font-size:1.6rem; font-weight:800;">100 / 100</div>
+                </div>
+
+                <div class="metric-bar-group">
+                  <div>
+                    <div class="metric-row">
+                      <span>PPE Compliance</span>
+                      <span class="mono font-bold" id="metric-w-ppe">100%</span>
+                    </div>
+                    <div class="metric-progress-bg">
+                      <div class="metric-progress-fill" id="bar-w-ppe" style="width:100%; background:var(--cyan);"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="metric-row">
+                      <span>Safety Training Certification</span>
+                      <span class="mono font-bold" id="metric-w-training">100%</span>
+                    </div>
+                    <div class="metric-progress-bg">
+                      <div class="metric-progress-fill" id="bar-w-training" style="width:100%; background:var(--blue);"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="metric-row">
+                      <span>Safety Protocol Compliance</span>
+                      <span class="mono font-bold" id="metric-w-zone">100%</span>
+                    </div>
+                    <div class="metric-progress-bg">
+                      <div class="metric-progress-fill" id="bar-w-zone" style="width:100%; background:var(--success);"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: AI PPE Safety Telemetry -->
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">🦺 AI PPE Safety Telemetry</h3>
+                  <div class="mono text-success" id="two-sided-ppe-status" style="font-size:1.4rem; font-weight:800;">100% Active</div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:20px; text-align:center;">
+                  <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:16px;">
+                    <div class="mono text-success" id="metric-ppe-helmet" style="font-size:1.6rem; font-weight:800;">100%</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">⛑️ Construction Helmet</div>
+                  </div>
+
+                  <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:16px;">
+                    <div class="mono text-success" id="metric-ppe-vest" style="font-size:1.6rem; font-weight:800;">100%</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">🦺 High-Vis Vest</div>
+                  </div>
+
+                  <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:16px;">
+                    <div class="mono text-cyan" id="metric-ppe-confidence" style="font-size:1.6rem; font-weight:800;">99.4%</div>
+                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">🧠 Model Confidence</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Below them: AI Priority Banner -->
+            <div class="ai-priority-banner">
+              <div class="ai-priority-content">
+                <div class="ai-priority-icon">🛡️</div>
+                <div>
+                  <div style="font-size:0.75rem; color:var(--cyan); font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">EHS Safety Status</div>
+                  <div style="font-weight:700; font-size:1.05rem;" id="ai-priority-text">
+                    All Facility Operations Operating Securely Within Safety Baselines
+                  </div>
+                </div>
+              </div>
+              <a href="alerts.html" class="btn btn-outline btn-sm">Alert Center →</a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Lower Section: Real-Time Priority Alerts & Live Camera Telemetry Quick Monitor -->
+        <div style="display:grid; grid-template-columns: 1.35fr 1fr; gap:24px;">
+          <!-- Recent Alerts Feed with Live Camera Snapshot Support -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">🚨 Real-Time Priority Alerts</h3>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
+                  Instant violation dispatch from live CCTV and AI PPE camera feeds.
+                </p>
+              </div>
+              <a href="alerts.html" class="btn btn-outline btn-sm">Alert Center →</a>
+            </div>
+            <div id="dashboard-recent-alerts">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Live Camera PPE Compliance Quick Monitor Card -->
+          <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">📹 Live AI PPE Camera Feed</h3>
+                  <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:2px;">
+                    Real-time hardhat and safety vest inspection status.
+                  </p>
+                </div>
+                <span class="badge badge-safe">● ALL PPE COMPLIANT</span>
+              </div>
+
+              <div style="background:var(--bg-secondary); border-radius:var(--radius-md); padding:16px; border:1px solid var(--border-light); margin-top:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:0.85rem; font-weight:700; color:var(--text-primary);">Camera Mode:</span>
+                  <span class="badge badge-cyan" id="dash-cam-active-mode">Webcam / AI Stream</span>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+                    <span style="font-size:0.85rem;">⛑️ Construction Hardhat</span>
+                    <span id="dash-cam-helmet-badge" class="badge badge-danger">❌ NOT DETECTED (Standby)</span>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+                    <span style="font-size:0.85rem;">🦺 High-Vis Safety Vest</span>
+                    <span id="dash-cam-vest-badge" class="badge badge-danger">❌ NOT DETECTED (Standby)</span>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+                    <span style="font-size:0.85rem;">🥾 Safety Footwear</span>
+                    <span class="badge badge-safe">✓ Standard Footwear</span>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+                    <span style="font-size:0.85rem;">⚡ AI Detection Latency</span>
+                    <span class="mono text-cyan" style="font-weight:700; font-size:0.85rem;">28ms (30 FPS)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px; display:flex; gap:10px;">
+              <button class="btn btn-primary" onclick="openDashboardCameraModal()" style="flex:1;">
+                📹 Open Live Camera
+              </button>
+              <a href="monitoring.html" class="btn btn-outline" style="flex:1; text-align:center;">
+                Live Monitoring →
+              </a>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Live PPE Detection Camera Modal -->
+  <div class="modal-backdrop" id="dashboard-camera-modal">
+    <div class="modal-box" style="max-width:860px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="dot dot-live"></span>
+          <h3 class="modal-title">Live AI Camera: Worker Helmet & Vest Inspection</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeDashboardCameraModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-cyan btn-sm live-cam-mode-btn" data-mode="webcam" onclick="LiveCameraDetector.startWebcam()">
+              🎥 Start Webcam
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="LiveCameraDetector.stopCurrentStream(); LiveCameraDetector.renderStandbyView('Camera paused. Click Start Webcam to resume.');">
+              ⏹️ Pause Camera
+            </button>
+            <label class="btn btn-outline btn-sm" style="cursor:pointer; margin:0;" title="Upload custom photo or video to test detection">
+              📁 Upload Photo/Video
+              <input type="file" accept="image/*,video/*" style="display:none;" onchange="LiveCameraDetector.handleFileUpload(event)">
+            </label>
+          </div>
+
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; gap:4px; align-items:center; background:var(--bg-secondary); padding:2px 6px; border-radius:6px; border:1px solid var(--border-light);">
+              <span style="font-size:0.75rem; color:var(--text-secondary); margin-right:4px;">Test:</span>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size:0.7rem; padding:2px 6px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-vest')" title="Simulate Worker without Vest">🦺 No Vest</button>
+              <button type="button" class="btn btn-outline btn-sm" style="font-size:0.7rem; padding:2px 6px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-helmet')" title="Simulate Worker without Helmet">⛑️ No Helmet</button>
+              <button type="button" class="btn btn-danger btn-sm" style="font-size:0.7rem; padding:2px 6px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-both')" title="Simulate Worker without Helmet & Vest">🚨 No Both</button>
+            </div>
+            <button class="btn btn-outline btn-sm" id="btn-toggle-cam-audio" onclick="LiveCameraDetector.toggleMute()">
+              🔊 Audio Alarm ON
+            </button>
+          </div>
+        </div>
+
+        <!-- Target Worker Identity Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:10px 14px; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-light); flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="live-cam-worker-avatar" style="width:32px; height:32px; border-radius:50%; background:var(--bg-tertiary); border:1px solid var(--cyan); display:flex; align-items:center; justify-content:center; overflow:hidden;">👷</div>
+            <div>
+              <div class="live-cam-worker-name" style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">Worker In View</div>
+              <div class="live-cam-worker-id" style="font-size:0.72rem; color:var(--text-secondary);">Scanning ID...</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Target Worker:</label>
+            <select id="modal-cam-worker-select" class="select-filter" style="padding:4px 8px; font-size:0.8rem;" onchange="LiveCameraDetector.setInspectedWorker(this.value)">
+              <option value="auto">⚡ Auto-Detect Active Worker</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Live Active Violation Notification Banner -->
+        <div id="modal-cam-violation-banner" class="live-violation-banner" style="display:none; margin-bottom:12px;">
+          <div class="violation-banner-content">
+            <span class="violation-banner-icon">🚨</span>
+            <div>
+              <div class="violation-banner-title">PPE VIOLATION DETECTED</div>
+              <div class="violation-banner-desc">Worker is missing required PPE. High-priority safety alert dispatched to Dashboard & Notifications.</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-danger ppe-pulse-alert violation-banner-badge">ALERT ACTIVE</span>
+            <a href="alerts.html" class="btn btn-sm btn-outline" style="font-size:0.75rem; padding:4px 8px; white-space:nowrap;">View Alert Center →</a>
+          </div>
+        </div>
+
+        <div class="live-cam-viewport-card" style="margin-bottom:16px;">
+          <div class="live-cam-canvas-wrapper" style="aspect-ratio:16/9.5;">
+            <canvas id="live-camera-canvas" width="640" height="380"></canvas>
+            <video id="live-camera-video" playsinline autoplay muted style="display:none;"></video>
+          </div>
+        </div>
+
+        <!-- Automated AI Inspection Telemetry Grid -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+          <!-- Real-Time Inspection Status -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:14px; display:flex; flex-direction:column; gap:10px;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--cyan); text-transform:uppercase; letter-spacing:0.04em;">
+              Automated PPE Inspection Status
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+              <span style="font-size:0.85rem;">⛑️ Construction Hardhat</span>
+              <span id="modal-cam-helmet-badge" class="badge badge-danger">❌ NOT DETECTED</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+              <span style="font-size:0.85rem;">🦺 High-Vis Safety Vest</span>
+              <span id="modal-cam-vest-badge" class="badge badge-danger">❌ NOT DETECTED</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg-tertiary); border-radius:6px;">
+              <span style="font-size:0.85rem;">🥾 Safety Footwear</span>
+              <span class="badge badge-safe">✓ Standard Compliant</span>
+            </div>
+          </div>
+
+          <!-- Continuous AI Stream Telemetry -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:14px; display:flex; flex-direction:column; gap:8px;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">
+              AI Vision Pipeline Telemetry
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px; font-size:0.8rem;">
+              <span style="color:var(--text-secondary);">Computer Vision Mode:</span>
+              <span class="mono text-cyan font-bold">100% Autonomous Scan</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px; font-size:0.8rem;">
+              <span style="color:var(--text-secondary);">Dynamic Human Tracker:</span>
+              <span class="mono font-bold" style="color:var(--success);">Active (Face & Torso Centroid)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px; font-size:0.8rem;">
+              <span style="color:var(--text-secondary);">Automated Alert Dispatch:</span>
+              <span class="badge badge-safe">✓ Auto-Sync Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.8rem; color:var(--text-secondary);">
+          Violations automatically record snapshots and reflect across dashboard metrics in real time.
+        </span>
+        <button class="btn btn-outline btn-sm" onclick="closeDashboardCameraModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/live-camera-detector.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

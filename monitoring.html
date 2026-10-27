@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeGuard AI — Live CCTV Monitoring & Computer Vision</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Chart.js CDN for PPE Compliance Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="index.html" class="brand-logo" style="font-size:1.15rem;">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(34, 211, 238, 0.2)" stroke="var(--cyan)"/>
+            <path d="M9 12l2 2 4-4" stroke="var(--cyan)" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>SafeGuard <span class="text-cyan">AI</span></span>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="monitoring.html" class="nav-item active">
+          <span class="icon">📹</span>
+          <span>Live Monitoring</span>
+        </a>
+        <a href="#multi-angle-face-detection" class="nav-item">
+          <span class="icon">👤</span>
+          <span>Face Visibility</span>
+        </a>
+        <a href="workers.html" class="nav-item">
+          <span class="icon">👷</span>
+          <span>Workers</span>
+        </a>
+        <a href="alerts.html" class="nav-item">
+          <span class="icon">🔔</span>
+          <span>Alerts</span>
+        </a>
+        <a href="incidents.html" class="nav-item">
+          <span class="icon">🚨</span>
+          <span>Incidents</span>
+        </a>
+        <a href="analytics.html" class="nav-item">
+          <span class="icon">📈</span>
+          <span>Analytics</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+          <span class="icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">INFERENCE ENGINE</div>
+        <div style="font-weight:700; color:var(--text-secondary); margin-bottom:8px;">YOLOv8x 30 FPS</div>
+        <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" style="width:100%; justify-content:center; font-size:0.75rem; padding:5px 8px;" title="Reset all website data to factory baseline">
+          🔄 Reset All Website
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-main">
+
+      <!-- Topbar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-hamburger" onclick="SafeGuardApp.toggleMobileSidebar()" aria-label="Toggle navigation">☰</button>
+          <div class="facility-badge">
+            <span style="font-size:1.1rem;">🏭</span>
+            <span>Pune Manufacturing Plant</span>
+          </div>
+
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search cameras, feeds, alerts...">
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="sys-status-badge">
+            <span class="dot dot-safe"></span>
+            <span>All Systems Operational</span>
+          </div>
+
+          <!-- Reset All Website -->
+          <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+            🔄 Reset
+          </button>
+
+          <button class="btn btn-outline btn-icon" id="theme-toggle-btn" onclick="SafeGuardApp.toggleTheme()">
+            🌙
+          </button>
+
+          <div class="notification-btn-wrapper" id="notif-wrapper">
+            <button class="btn btn-outline btn-icon" onclick="SafeGuardApp.toggleNotificationDropdown()">
+              🔔
+              <span class="notif-count-badge" id="topbar-notif-count" style="display:none;">0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown">
+              <div class="notif-dropdown-header">
+                <span>Active Safety Alerts</span>
+                <a href="alerts.html" style="font-size:0.8rem; color:var(--cyan);">View All</a>
+              </div>
+              <div class="notif-list" id="notif-list-items"></div>
+            </div>
+          </div>
+
+          <div class="user-profile-badge">
+            <div class="user-avatar">VM</div>
+            <div>
+              <div style="font-weight:700; font-size:0.85rem; line-height:1.2;">Vikram Malhotra</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary);">Safety Officer</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <div class="page-body">
+
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Live Camera Monitoring & Computer Vision</h1>
+            <p class="page-subtitle">Real-time object detection, PPE classification, and spatial hazard inference.</p>
+          </div>
+
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <a href="#multi-angle-face-detection" class="btn btn-outline" style="font-weight:700;">
+              👤 Face Visibility &amp; Timestamps ↓
+            </a>
+            <a href="workers.html" class="btn btn-cyan" style="font-weight:700;">
+              👷 Multi-Worker PPE Dashboard →
+            </a>
+            <a href="dashboard.html" class="btn btn-outline" style="font-weight:700;">
+              Inspect Dashboard Live Feed →
+            </a>
+            <button class="btn btn-sm btn-reset" onclick="SafeGuardApp.resetAllWebsite()" title="Reset all website data to factory baseline">
+              🔄 Reset All
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Camera PPE Detection Console -->
+        <section class="live-cam-console" id="live-camera-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="dot dot-live" style="width:10px; height:10px;"></span>
+                <h2 style="font-size:1.25rem; font-weight:800; margin:0; display:inline-block;" id="live-cam-title-display">Live AI Vision Camera: PPE Inspection</h2>
+                <span class="badge badge-cyan" style="font-size:0.7rem; padding:3px 8px;">SUB-SECOND DETECTION</span>
+              </div>
+              <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:4px;">
+                Detects <strong>OSHA/EN Construction Hardhats</strong> &amp; <strong>High-Visibility Safety Vests</strong>, with autonomous <strong>Multi-Angle Face Visibility &amp; Timestamp Tracking</strong>.
+              </p>
+            </div>
+
+            <!-- Vision Mode Switcher -->
+            <div style="display:flex; align-items:center; gap:6px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); padding:3px;">
+              <button type="button" class="btn btn-sm btn-cyan" id="vision-mode-ppe-btn" onclick="LiveCameraDetector.setVisionMode('ppe')" style="font-size:0.75rem; padding:4px 10px; font-weight:700;">
+                🦺 PPE Inspection
+              </button>
+              <button type="button" class="btn btn-sm btn-outline" id="vision-mode-face-btn" onclick="LiveCameraDetector.setVisionMode('face')" style="font-size:0.75rem; padding:4px 10px; font-weight:700;">
+                👤 Face Visibility
+              </button>
+              <button type="button" class="btn btn-sm btn-outline" id="vision-mode-dual-btn" onclick="LiveCameraDetector.setVisionMode('combined')" style="font-size:0.75rem; padding:4px 10px; font-weight:700;">
+                🛡️ Dual Combined Vision
+              </button>
+            </div>
+
+            <!-- Mode Selector Controls -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn btn-cyan btn-sm live-cam-mode-btn" data-mode="webcam" onclick="LiveCameraDetector.startWebcam()">
+                🎥 Start Webcam
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="LiveCameraDetector.stopCurrentStream(); LiveCameraDetector.renderStandbyView('Camera paused. Click Start Webcam to resume.');">
+                ⏹️ Pause Camera
+              </button>
+              <label class="btn btn-outline btn-sm" style="cursor:pointer; margin:0;" title="Upload custom photo or video to test detection">
+                📁 Upload Photo/Video
+                <input type="file" accept="image/*,video/*" style="display:none;" onchange="LiveCameraDetector.handleFileUpload(event)">
+              </label>
+            </div>
+          </div>
+
+          <div class="live-cam-layout">
+            <!-- Left: Viewport & Canvas with HUD -->
+            <div class="live-cam-viewport-card">
+              <!-- Live Active Violation Notification Banner -->
+              <div id="live-cam-violation-banner" class="live-violation-banner" style="display:none;">
+                <div class="violation-banner-content">
+                  <span class="violation-banner-icon">🚨</span>
+                  <div>
+                    <div class="violation-banner-title">PPE VIOLATION DETECTED</div>
+                    <div class="violation-banner-desc">Worker is missing required PPE. High-priority safety alert dispatched to Dashboard & Notifications.</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="badge badge-danger ppe-pulse-alert violation-banner-badge">ALERT ACTIVE</span>
+                  <a href="alerts.html" class="btn btn-sm btn-outline" style="font-size:0.75rem; padding:4px 8px; white-space:nowrap;">View In Alert Center →</a>
+                </div>
+              </div>
+
+              <div class="live-cam-canvas-wrapper">
+                <canvas id="live-camera-canvas" width="640" height="420"></canvas>
+                <video id="live-camera-video" playsinline autoplay muted style="display:none;"></video>
+              </div>
+
+              <!-- HUD Bar Below Viewport -->
+              <div class="live-cam-hud-bar">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span id="hud-badge-overall" class="badge badge-safe">● All PPE Compliant</span>
+                  <span style="color:var(--text-secondary); font-size:0.75rem;">YOLOv8-Safety v5.0 | Sub-Second CV</span>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-outline btn-sm" id="btn-toggle-cam-audio" onclick="LiveCameraDetector.toggleMute()" style="font-size:0.75rem; padding:3px 8px;">
+                    🔊 Audio Alarm ON
+                  </button>
+                  <a href="dashboard.html" class="btn btn-outline btn-sm" style="font-size:0.75rem; padding:3px 8px;">
+                    Inspect Dashboard →
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Real-Time Automated AI Vision Diagnostics & Dispatch Feed -->
+            <div class="live-cam-controls-panel">
+              <!-- Live PPE Status Chips -->
+              <div class="ppe-metric-chip-group">
+                <div class="ppe-metric-chip">
+                  <span class="ppe-metric-chip-title">⛑️ Construction Hardhat</span>
+                  <span id="hud-badge-helmet" class="badge badge-danger" style="font-size:0.8rem; margin-top:2px;">
+                    ❌ NOT DETECTED
+                  </span>
+                </div>
+
+                <div class="ppe-metric-chip">
+                  <span class="ppe-metric-chip-title">🦺 High-Vis Safety Vest</span>
+                  <span id="hud-badge-vest" class="badge badge-danger" style="font-size:0.8rem; margin-top:2px;">
+                    ❌ NOT DETECTED
+                  </span>
+                </div>
+
+                <div class="ppe-metric-chip">
+                  <span class="ppe-metric-chip-title">🥾 Safety Footwear</span>
+                  <span id="hud-badge-shoes" class="badge badge-safe" style="font-size:0.8rem; margin-top:2px;">
+                    ✓ Standard Footwear
+                  </span>
+                </div>
+              </div>
+
+              <!-- Calibration & Target Worker -->
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:12px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Detection Sensitivity:</label>
+                  <select id="live-cam-sensitivity" class="select-filter" style="padding:4px 8px; font-size:0.8rem;">
+                    <option value="standard">Standard (OSHA/EN Baseline)</option>
+                    <option value="high">High Sensitivity (Low-Light / Webcam)</option>
+                    <option value="strict">Strict Audit (ISO 45001)</option>
+                  </select>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:6px; border-top:1px solid var(--border-light); padding-top:8px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Target Worker Being Inspected:</label>
+                    <a href="workers.html" style="font-size:0.75rem; color:var(--cyan); text-decoration:none;">+ Add Worker</a>
+                  </div>
+                  <select id="live-cam-worker-select" class="select-filter" style="padding:6px 8px; font-size:0.82rem; width:100%;" onchange="LiveCameraDetector.setInspectedWorker(this.value)">
+                    <option value="auto">⚡ Auto-Detect Active Worker</option>
+                  </select>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:8px;">
+                  <div style="display:flex; flex-direction:column;">
+                    <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Identification Delay:</label>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Confirmation window</span>
+                  </div>
+                  <select id="live-cam-confirm-delay" class="select-filter" style="padding:4px 8px; font-size:0.8rem;" onchange="LiveCameraDetector.setConfirmationDuration(this.value); if (typeof MultiWorkerDetector !== 'undefined') MultiWorkerDetector.setConfirmationDuration(this.value);">
+                    <option value="1000">1.0s (Fast)</option>
+                    <option value="1500" selected>1.5s (Recommended)</option>
+                    <option value="2000">2.0s (Controlled)</option>
+                    <option value="2500">2.5s (Strict)</option>
+                    <option value="3000">3.0s (High Security)</option>
+                  </select>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:8px;">
+                  <div style="display:flex; flex-direction:column;">
+                    <label style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Incident Alert Delay:</label>
+                    <span style="font-size:0.7rem; color:var(--text-muted);">Sustained violation hold</span>
+                  </div>
+                  <select id="live-cam-alert-delay" class="select-filter" style="padding:4px 8px; font-size:0.8rem;" onchange="LiveCameraDetector.setIncidentAlertDelay(this.value); if (typeof MultiWorkerDetector !== 'undefined') MultiWorkerDetector.setIncidentAlertDelay(this.value);">
+                    <option value="3000">3.0s (Prompt)</option>
+                    <option value="5000" selected>5.0s (Standard 5s Hold)</option>
+                    <option value="7000">7.0s (Extended)</option>
+                    <option value="10000">10.0s (High Tolerance)</option>
+                  </select>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:8px;">
+                  <span style="font-size:0.8rem; color:var(--text-secondary);">Auto-Dispatch to Dashboard:</span>
+                  <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:0.8rem;">
+                    <input type="checkbox" id="live-cam-auto-alert" checked>
+                    <span class="text-cyan font-bold">Enabled</span>
+                  </label>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-light); padding-top:8px; flex-wrap:wrap; gap:6px;">
+                  <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:700;">Simulate PPE Test:</span>
+                  <div style="display:flex; gap:6px;">
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:0.72rem; padding:3px 7px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-vest')" title="Simulate Worker without Vest">🦺 No Vest</button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size:0.72rem; padding:3px 7px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-helmet')" title="Simulate Worker without Helmet">⛑️ No Helmet</button>
+                    <button type="button" class="btn btn-danger btn-sm" style="font-size:0.72rem; padding:3px 7px;" onclick="LiveCameraDetector.triggerSimulatedDetection('no-both')" title="Simulate Worker without Helmet & Vest">🚨 No Both</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Automated AI Vision Diagnostics & Telemetry -->
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:14px;">
+                <div style="font-size:0.8rem; font-weight:700; color:var(--cyan); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; display:flex; justify-content:space-between; align-items:center;">
+                  <span>Automated AI Vision Diagnostics</span>
+                  <span class="badge badge-cyan" style="font-size:0.65rem;">AUTONOMOUS</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--bg-tertiary); border-radius:6px;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div class="live-cam-worker-avatar" style="width:32px; height:32px; border-radius:50%; background:var(--bg-secondary); border:1px solid var(--cyan); display:flex; align-items:center; justify-content:center; overflow:hidden;">👷</div>
+                      <div>
+                        <div class="live-cam-worker-name" style="font-weight:700; color:var(--text-primary); font-size:0.85rem;">Worker In View</div>
+                        <div class="live-cam-worker-id" style="font-size:0.72rem; color:var(--text-secondary);">Scanning ID...</div>
+                      </div>
+                    </div>
+                    <span class="badge badge-cyan" style="font-size:0.65rem;">ACTIVE TARGET</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">AI Inference Model:</span>
+                    <span class="mono text-cyan font-bold">YOLOv8-Safety + HSV CV</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Frame Latency:</span>
+                    <span class="mono font-bold" id="live-cam-latency" style="color:var(--success);">28ms (30 FPS)</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--bg-tertiary); border-radius:4px;">
+                    <span style="color:var(--text-secondary);">Automated Dispatch:</span>
+                    <span class="badge badge-safe">✓ Auto-Sync Active</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Automated Live Camera Alerts Stream -->
+              <div style="background:var(--bg-secondary); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:14px; flex:1; display:flex; flex-direction:column;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                  <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.04em;">
+                    📡 Live Camera Auto-Alert Stream
+                  </div>
+                  <span class="dot dot-live" style="width:8px; height:8px;"></span>
+                </div>
+                <div id="live-cam-dispatches-feed" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto;">
+                  <!-- Rendered dynamically by LiveCameraDetector -->
+                  <div style="padding:16px; text-align:center; color:var(--text-secondary); font-size:0.8rem; background:var(--bg-tertiary); border-radius:6px; border:1px dashed var(--border-light);">
+                    Scanning camera stream... Non-compliance will automatically trigger snapshots and alerts here.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direct Navigation -->
+              <div style="display:flex; gap:10px;">
+                <a href="dashboard.html" class="btn btn-cyan btn-sm" style="flex:1; text-align:center; font-weight:700;">
+                  Inspect Dashboard Alerts →
+                </a>
+                <a href="alerts.html" class="btn btn-outline btn-sm" style="flex:1; text-align:center;">
+                  Alert Center →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================================================
+             Multi-Angle Face Visibility and Timestamped Detection Console
+             ========================================================================== -->
+        <section id="multi-angle-face-detection" class="card" style="margin-top:30px; margin-bottom:30px; padding:24px;">
+          <!-- Section Header -->
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px; border-bottom:1px solid var(--border); padding-bottom:18px;">
+            <div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.6rem;">👤</span>
+                <div>
+                  <h2 class="card-title" style="margin:0; font-size:1.35rem; display:flex; align-items:center; gap:8px;">
+                    Multi-Angle Face Visibility &amp; Timestamped Detection
+                    <span class="badge badge-cyan" style="font-size:0.75rem;">Autonomous Pose Estimation</span>
+                  </h2>
+                  <p style="color:var(--text-secondary); font-size:0.85rem; margin-top:3px;">
+                    Real-time detection across diverse head poses (Frontal, Left/Right Profile, 3/4 View, Tilted, Distant) with actual system timestamps and event deduplication.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Global Actions -->
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <span id="face-engine-badge" class="badge badge-safe" style="font-size:0.75rem; padding:5px 10px;">
+                Multi-Angle Pose CV
+              </span>
+              <button class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.exportCSV()" title="Download genuine CSV of all timestamped face detection events">
+                📥 Export CSV
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="MultiAngleFaceDetector.exportPDFReport()" title="Generate printable PDF audit report">
+                📄 Export PDF Report
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.clearHistory()" style="color:var(--danger); border-color:rgba(239,68,68,0.4);" title="Clear detection history">
+                🗑️ Clear Log
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Summary Ribbons -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin:20px 0;">
+            <div class="card" style="padding:14px 18px; background:var(--bg-secondary); border:1px solid var(--border);">
+              <div style="font-size:0.75rem; color:var(--text-secondary); text-transform:uppercase; font-weight:700;">Total Visible Faces</div>
+              <div class="mono" id="kpi-face-total-count" style="font-size:1.8rem; font-weight:800; color:var(--text-primary); margin-top:4px;">0 Active</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Tracked Simultaneously</div>
+            </div>
+
+            <div class="card" style="padding:14px 18px; background:var(--bg-secondary); border:1px solid var(--border);">
+              <div style="font-size:0.75rem; color:var(--success); text-transform:uppercase; font-weight:700;">Confirmed Multi-Angle</div>
+              <div class="mono" id="kpi-face-confirmed-count" style="font-size:1.8rem; font-weight:800; color:var(--success); margin-top:4px;">0 Multi-Angle</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">Frontal, Profile, 3/4 &amp; Tilt</div>
+            </div>
+
+            <div class="card" style="padding:14px 18px; background:var(--bg-secondary); border:1px solid var(--border);">
+              <div style="font-size:0.75rem; color:var(--warning); text-transform:uppercase; font-weight:700;">Uncertain / Occluded</div>
+              <div class="mono" id="kpi-face-uncertain-count" style="font-size:1.8rem; font-weight:800; color:var(--warning); margin-top:4px;">0 Low Vis</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Flagged "Not Clearly Visible"</div>
+            </div>
+
+            <div class="card" style="padding:14px 18px; background:var(--bg-secondary); border:1px solid var(--border);">
+              <div style="font-size:0.75rem; color:var(--orange); text-transform:uppercase; font-weight:700;">Live System Clock (IST)</div>
+              <div class="mono" id="face-hud-system-time" style="font-size:1.25rem; font-weight:800; color:var(--orange); margin-top:8px; white-space:nowrap;">15-Oct-2026 23:13:21</div>
+              <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Actual System Timestamp</div>
+            </div>
+          </div>
+
+          <!-- Interactive Test Presets Bar -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1rem;">🧪</span>
+              <span style="font-size:0.82rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase;">One-Click Angle Test Presets:</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.loadSampleScene('front')" style="font-size:0.75rem; padding:4px 8px;">
+                👤 Frontal View
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.loadSampleScene('profiles')" style="font-size:0.75rem; padding:4px 8px;">
+                ↔️ Left &amp; Right Profiles
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.loadSampleScene('three_quarter')" style="font-size:0.75rem; padding:4px 8px;">
+                📐 3/4 &amp; Tilted Views
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.loadSampleScene('group')" style="font-size:0.75rem; padding:4px 8px;">
+                👥 Multi-Worker Group
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="MultiAngleFaceDetector.loadSampleScene('occluded')" style="font-size:0.75rem; padding:4px 8px;">
+                🌙 Low-Light / Occluded
+              </button>
+            </div>
+          </div>
+
+          <!-- Parameter & Deduplication Controls Bar -->
+          <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
+            <div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Confidence Threshold:</label>
+                <span id="face-conf-val" class="mono font-bold text-orange" style="font-size:0.8rem;">50%</span>
+              </div>
+              <input type="range" id="face-conf-slider" min="0.30" max="0.90" step="0.05" value="0.50" 
+                     style="width:100%; accent-color:var(--orange); cursor:pointer;"
+                     oninput="MultiAngleFaceDetector.confThreshold=parseFloat(this.value); document.getElementById('face-conf-val').textContent=Math.round(this.value*100)+'%'">
+            </div>
+
+            <div>
+              <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px; display:block;">Event Deduplication Cooldown:</label>
+              <select id="face-dedup-select" class="select-filter" style="width:100%; padding:5px 8px; font-size:0.8rem;" 
+                      onchange="MultiAngleFaceDetector.dedupCooldownSec=parseInt(this.value, 10)">
+                <option value="1">1 Second Cooldown</option>
+                <option value="3" selected>3 Seconds (Recommended)</option>
+                <option value="5">5 Seconds Cooldown</option>
+                <option value="10">10 Seconds Cooldown</option>
+                <option value="30">30 Seconds Cooldown</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px; display:block;">Active Camera Source:</label>
+              <select id="face-camera-select" class="select-filter" style="width:100%; padding:5px 8px; font-size:0.8rem;"
+                      onchange="MultiAngleFaceDetector.cameraSource=this.value">
+                <option value="Live Webcam Stream" selected>Live Webcam Stream</option>
+                <option value="CAM-01 (Pune Main Gate)">CAM-01 (Pune Main Gate)</option>
+                <option value="CAM-02 (Fabrication Bay)">CAM-02 (Fabrication Bay)</option>
+                <option value="CAM-03 (Loading Docks)">CAM-03 (Loading Docks)</option>
+                <option value="Uploaded Video/Photo">Uploaded Video/Photo</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px; display:block;">Min Distance Filter:</label>
+              <select id="face-minsize-select" class="select-filter" style="width:100%; padding:5px 8px; font-size:0.8rem;"
+                      onchange="MultiAngleFaceDetector.minFaceSizePx=parseInt(this.value, 10)">
+                <option value="20">Distant Faces (&gt;20px)</option>
+                <option value="25" selected>Standard (&gt;25px)</option>
+                <option value="50">Close-Up Only (&gt;50px)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Face Detection Event History Table -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:12px;">
+              <div>
+                <h3 style="margin:0; font-size:1.05rem; font-weight:700; display:flex; align-items:center; gap:8px;">
+                  📋 Timestamped Face Detection Event Trail
+                  <span class="badge badge-orange" style="font-size:0.7rem;">Real-Time Deduplicated</span>
+                </h3>
+                <p style="font-size:0.78rem; color:var(--text-secondary); margin-2px 0 0 0;">
+                  Chronological record of multi-angle face visibility detections with actual system timestamps and tracking IDs.
+                </p>
+              </div>
+
+              <!-- Filter Bar -->
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input type="text" id="face-filter-search" class="form-control" placeholder="Search ID, Pose..." 
+                       style="padding:5px 10px; font-size:0.8rem; width:160px;" oninput="MultiAngleFaceDetector.renderEventHistoryTable()">
+
+                <select id="face-filter-status" class="select-filter" style="padding:5px 8px; font-size:0.8rem;" 
+                        onchange="MultiAngleFaceDetector.renderEventHistoryTable()">
+                  <option value="All">All Pose Statuses</option>
+                  <option value="FRONT">Front-Facing</option>
+                  <option value="PROFILE">Profile (Left/Right)</option>
+                  <option value="CONFIRMED">Confirmed Multi-Angle</option>
+                  <option value="UNCERTAIN">Uncertain / Low Vis</option>
+                </select>
+
+                <select id="face-filter-camera" class="select-filter" style="padding:5px 8px; font-size:0.8rem;"
+                        onchange="MultiAngleFaceDetector.renderEventHistoryTable()">
+                  <option value="All">All Cameras</option>
+                  <option value="Webcam">Webcam Stream</option>
+                  <option value="CAM-01">CAM-01 (Main Gate)</option>
+                  <option value="CAM-02">CAM-02 (Fabrication)</option>
+                  <option value="CAM-03">CAM-03 (Docks)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive" style="border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden;">
+              <table class="data-table" style="margin:0; width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr style="background:var(--bg-tertiary); text-align:left;">
+                    <th style="padding:10px 14px; width:100px;">Event ID</th>
+                    <th style="padding:10px 14px; width:180px;">Detection Timestamp</th>
+                    <th style="padding:10px 14px; width:190px;">Tracking ID &amp; Type</th>
+                    <th style="padding:10px 14px; width:180px;">Pose &amp; View Angle</th>
+                    <th style="padding:10px 14px; width:150px;">Confidence Score</th>
+                    <th style="padding:10px 14px;">Camera Node</th>
+                    <th style="padding:10px 14px; text-align:right; width:90px;">Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="face-events-tbody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PPE Detection Dedicated Section (Requirement 12) -->
+        <section style="margin-top:30px;">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">🦺 PPE Compliance Telemetry</h2>
+              <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">Historical compliance curves and breakdown across PPE categories and operational shifts.</p>
+            </div>
+          </div>
+
+          <!-- PPE Metric Badges -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin-bottom:24px;">
+            <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:20px;">
+              <div>
+                <div style="font-size:0.85rem; color:var(--text-secondary);">Helmet Compliance</div>
+                <div class="val mono text-success" id="ppe-helmet-val" style="font-size:2rem; font-weight:800; margin-top:4px;">100.0%</div>
+              </div>
+              <div style="font-size:2rem;">⛑️</div>
+            </div>
+
+            <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:20px;">
+              <div>
+                <div style="font-size:0.85rem; color:var(--text-secondary);">Safety Vest Compliance</div>
+                <div class="val mono text-cyan" id="ppe-vest-val" style="font-size:2rem; font-weight:800; margin-top:4px;">100.0%</div>
+              </div>
+              <div style="font-size:2rem;">🦺</div>
+            </div>
+
+            <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:20px;">
+              <div>
+                <div style="font-size:0.85rem; color:var(--text-secondary);">Overall PPE Benchmark</div>
+                <div class="val mono text-cyan" id="ppe-overall-val" style="font-size:2rem; font-weight:800; margin-top:4px;">100.0%</div>
+              </div>
+              <div style="font-size:2rem;">🛡️</div>
+            </div>
+          </div>
+
+          <!-- PPE Chart.js Visuals -->
+          <div style="display:grid; grid-template-columns: 1.2fr 1fr 0.8fr; gap:20px;">
+            <!-- PPE compliance by day -->
+            <div class="card">
+              <div class="card-header">
+                <h4 style="font-size:0.95rem;">PPE Compliance by Day (7 Days)</h4>
+              </div>
+              <div class="chart-container" style="height:220px;">
+                <canvas id="chart-ppe-day"></canvas>
+              </div>
+            </div>
+
+            <!-- PPE violations by category -->
+            <div class="card">
+              <div class="card-header">
+                <h4 style="font-size:0.95rem;">Violations by PPE Category</h4>
+              </div>
+              <div class="chart-container" style="height:220px;">
+                <canvas id="chart-ppe-zone"></canvas>
+              </div>
+            </div>
+
+            <!-- PPE violations by shift -->
+            <div class="card">
+              <div class="card-header">
+                <h4 style="font-size:0.95rem;">Violations by Shift</h4>
+              </div>
+              <div class="chart-container" style="height:220px;">
+                <canvas id="chart-ppe-shift"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/multi-angle-face-detector.js"></script>
+  <script src="js/live-camera-detector.js"></script>
+  <script src="js/monitoring.js"></script>
+</body>
+</html>
